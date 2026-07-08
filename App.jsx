@@ -59,11 +59,14 @@ const STRIPE_LINKS = {
   cancellationFee: "",
 };
 
-const addBooking = useCallback(async (booking) => {
-    await insertBooking(booking);
-    setBookings((prev) => [booking, ...prev]);
-    notifyNetlifyBooking(booking);
-  }, []);
+const CONTACT = {
+  phone: "289-627-9931",
+  phoneHref: "2896279931",
+  email: "gracecohomeservices@gmail.com",
+  area: "Serving Greater Toronto Area (GTA)",
+  instagram: "@gracecohomeservices",
+  facebook: "@gracecohomeservices",
+};
 
 const SIZE_TIERS = [
   { id: "condo", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 250, Icon: Building2 },
@@ -75,29 +78,21 @@ const SIZE_TIERS = [
 ];
 
 const ADD_ON_SERVICES = [
-  { id: "windows", label: "Interior Windows (sills & trims; nets removed by owner)", Icon: Sparkles, priceLabel: null },
-  { id: "oven", label: "Inside Oven", Icon: Box, priceLabel: null },
-  { id: "fridge", label: "Inside Refrigerator", Icon: Package, priceLabel: null },
-  { id: "cabinets", label: "Interior Cabinets & Drawers (occupied homes)", Icon: ClipboardList, priceLabel: null },
-  { id: "garage", label: "Garage Cleaning", Icon: Building2, priceLabel: null },
-  { id: "balcony", label: "Balcony / Patio Cleaning", Icon: HomeIcon, priceLabel: null },
-  { id: "wallwash", label: "Wall Washing", Icon: RefreshCw, priceLabel: null },
-  { id: "organization", label: "Organization & Decluttering", Icon: Shirt, priceLabel: null },
+  { id: "deep", label: "Deep Cleaning", Icon: Sparkles, priceLabel: "Add $100–$150 to any basic clean" },
+  { id: "home-org", label: "Home Organization", Icon: Package, priceLabel: "Starting at $100" },
+  { id: "basement", label: "Basement & Storage Organization", Icon: Box, priceLabel: null },
+  { id: "closet", label: "Closet Organization", Icon: Shirt, priceLabel: null },
+  { id: "playroom", label: "Playroom & Toy Organization", Icon: Smile, priceLabel: null },
+  { id: "declutter", label: "Decluttering & Home Reset", Icon: HomeIcon, priceLabel: "Starting at $100" },
+  { id: "kitchen-bath", label: "Kitchen & Bathroom Cleaning", Icon: Bath, priceLabel: null },
+  { id: "regular", label: "Regular Home Cleaning", Icon: RefreshCw, priceLabel: null },
+  { id: "movein", label: "Move-In / Move-Out Cleaning", Icon: Truck, priceLabel: "Starting at $300" },
+  { id: "customized", label: "Customized Plans for Your Home", Icon: ClipboardList, priceLabel: null },
 ];
 
 const BASIC_INCLUDES = [
-  "Light dusting of accessible surfaces",
-  "Vacuuming all floors and carpets",
-  "Mopping hard floors",
-  "Cleaning and sanitizing kitchens and bathrooms",
-  "Wiping countertops and accessible surfaces",
-  "Cleaning sinks, faucets, and fixtures",
-  "Cleaning mirrors",
-  "Exterior appliance wipe-down",
-  "Exterior cabinet wipe-down",
-  "Emptying garbage bins",
-  "Spot cleaning fingerprints and smudges",
-  "General tidying of accessible areas",
+  "Kitchen cleaning", "Bathroom cleaning", "Dusting", "Vacuuming",
+  "Mopping", "Surface wipe downs", "Garbage removal", "Bed making (upon request)",
 ];
 
 const TIME_SLOTS = ["8:00 AM","9:00 AM","10:00 AM","11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
@@ -774,8 +769,7 @@ function ServicesPage({ navigate }) {
             })}
           </div>
           <div className="gc-card" style={{ padding: 22, marginBottom: 16 }}>
-            <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 4 }}>Basic Cleaning</h3>
-            <p style={{ fontSize: 13, fontStyle: "italic", color: C.charcoalSoft, marginBottom: 14 }}>Perfect for regularly maintained homes that need a fresh, clean finish.</p>
+            <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 12 }}>Every Basic Clean Includes</h3>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               {BASIC_INCLUDES.map((b) => (
                 <div key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
@@ -790,8 +784,8 @@ function ServicesPage({ navigate }) {
       {/* DEEP CLEANING */}
       {activeTab === "deep" && (
         <div>
-          <div style={{ padding: "14px 18px", borderRadius: 12, background: C.creamDeep, marginBottom: 20, fontSize: 14, color: C.charcoalSoft, lineHeight: 1.65, fontStyle: "italic" }}>
-            Ideal for first-time clients or homes needing extra attention.
+          <div style={{ padding: "14px 18px", borderRadius: 12, background: C.creamDeep, marginBottom: 20, fontSize: 14, color: C.charcoalSoft, lineHeight: 1.65 }}>
+            Deep cleaning goes beyond a basic clean with detailed attention to baseboards, light switches, door handles, doors and trims, thorough scrubbing of bathrooms and kitchens, and hard-to-reach areas. Perfect for first-time clients or homes needing extra care. Note: interior appliances (fridge, oven, microwave) are available as add-ons.
           </div>
           <div className="gc-grid-3" style={{ marginBottom: 16 }}>
             {[
@@ -810,25 +804,14 @@ function ServicesPage({ navigate }) {
               </div>
             ))}
           </div>
-          <div className="gc-card" style={{ padding: 22, marginBottom: 16 }}>
-            <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 4 }}>Deep Cleaning</h3>
-            <p style={{ fontSize: 13, fontStyle: "italic", color: C.charcoalSoft, marginBottom: 14 }}>Everything in Basic Clean, plus:</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              {DEEP_INCLUDES.map((b) => (
-                <div key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
-                  <Check size={14} color={C.sage} style={{ marginTop: 2, flexShrink: 0 }} /> {b}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
 
       {/* MOVE-IN / MOVE-OUT */}
       {activeTab === "moveinout" && (
         <div>
-          <div style={{ padding: "14px 18px", borderRadius: 12, background: C.creamDeep, marginBottom: 20, fontSize: 14, color: C.charcoalSoft, lineHeight: 1.65, fontStyle: "italic" }}>
-            Our most comprehensive cleaning service, designed to prepare a home for its next chapter.
+          <div style={{ padding: "14px 18px", borderRadius: 12, background: C.creamDeep, marginBottom: 20, fontSize: 14, color: C.charcoalSoft, lineHeight: 1.65 }}>
+            Our most thorough service — designed to leave a property spotless for incoming or outgoing tenants. Includes a full deep clean of every room, all appliances inside and out, cabinets, closets, and all buildup between occupants.
           </div>
           <div className="gc-grid-3" style={{ marginBottom: 16 }}>
             {[
@@ -847,24 +830,13 @@ function ServicesPage({ navigate }) {
               </div>
             ))}
           </div>
-          <div className="gc-card" style={{ padding: 22, marginBottom: 16 }}>
-            <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 4 }}>Move-In / Move-Out Cleaning</h3>
-            <p style={{ fontSize: 13, fontStyle: "italic", color: C.charcoalSoft, marginBottom: 14 }}>Everything in Deep Clean, plus:</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              {MOVEINOUT_INCLUDES.map((b) => (
-                <div key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
-                  <Check size={14} color={C.sage} style={{ marginTop: 2, flexShrink: 0 }} /> {b}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
 
       {/* SPECIALTY */}
       {activeTab === "specialty" && (
         <div>
-          <p style={{ textAlign: "center", color: C.charcoalSoft, fontSize: 14.5, marginBottom: 24 }}>Add any of these to a Basic, Deep, or Move-In/Move-Out clean — contact us for a quote.</p>
+          <p style={{ textAlign: "center", color: C.charcoalSoft, fontSize: 14.5, marginBottom: 24 }}>All specialty services are custom-quoted after a quick consultation based on your space and needs.</p>
           <div className="gc-grid-3" style={{ marginBottom: 16 }}>
             {ADD_ON_SERVICES.map((s) => (
               <div key={s.id} className="gc-card" style={{ padding: 20 }}>
@@ -927,27 +899,6 @@ const MOVEINOUT_TIERS = [
   { id: "large-mio", label: "Large Home", sub: "2,000–2,500 sq ft", price: 550 },
   { id: "xl-mio", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 700 },
   { id: "custom-mio", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null },
-];
-const DEEP_INCLUDES = [
-  "Detailed dusting throughout the home",
-  "Baseboards hand wiped",
-  "Doors, door frames, and trim cleaned",
-  "Light switches and high-touch surfaces sanitized",
-  "Air vents dusted",
-  "Detailed kitchen degreasing",
-  "Soap scum and hard water buildup removed",
-  "High-touch surfaces thoroughly disinfected",
-  "Extra attention to corners and edges",
-];
-const MOVEINOUT_INCLUDES = [
-  "Interior and exterior of cabinets and drawers",
-  "Interior of refrigerator, freezer, oven, and microwave",
-  "Interior closets and shelving cleaned",
-  "Detailed appliance cleaning",
-  "Interior windows and accessible tracks",
-  "Extra attention to corners, edges, trim, and hard-to-reach areas",
-  "Full top-to-bottom sanitization of the home",
-  "Final detail inspection to ensure the home is move-in ready",
 ];
 const SPECIALTY_LIST = [
   { id: "home-org", label: "Home Organization", priceLabel: "Starting at $100" },
@@ -1986,4 +1937,3 @@ export default function App() {
     </div>
   );
 }
-
