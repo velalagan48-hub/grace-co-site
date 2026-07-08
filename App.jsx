@@ -59,14 +59,11 @@ const STRIPE_LINKS = {
   cancellationFee: "",
 };
 
-const CONTACT = {
-  phone: "289-627-9931",
-  phoneHref: "2896279931",
-  email: "gracecohomeservices@gmail.com",
-  area: "Serving Greater Toronto Area (GTA)",
-  instagram: "@gracecohomeservices",
-  facebook: "@gracecohomeservices",
-};
+const addBooking = useCallback(async (booking) => {
+    await insertBooking(booking);
+    setBookings((prev) => [booking, ...prev]);
+    notifyNetlifyBooking(booking);
+  }, []);
 
 const SIZE_TIERS = [
   { id: "condo", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 250, Icon: Building2 },
