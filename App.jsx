@@ -1928,9 +1928,10 @@ export default function App() {
     setBookings(data);
   }, []);
 
-  const addBooking = useCallback(async (booking) => {
+const addBooking = useCallback(async (booking) => {
     await insertBooking(booking);
     setBookings((prev) => [booking, ...prev]);
+    notifyNetlifyBooking(booking);
   }, []);
 
   const updateBooking = useCallback(async (id, updates) => {
