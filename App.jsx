@@ -66,7 +66,36 @@ const CONTACT = {
   area: "Serving Greater Toronto Area (GTA)",
   instagram: "@gracecohomeservices",
   facebook: "@gracecohomeservices",
-};
+}; 
+function encodeFormData(data) {
+  return Object.keys(data)
+    .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k] ?? ""))
+    .join("&");
+}
+
+async function notifyNetlifyBooking(booking) {
+  try {
+    await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: encodeFormData({
+        "form-name": "booking-request",
+        name: booking.name,
+        email: booking.email,
+        phone: booking.phone,
+        address: booking.address,
+        service: booking.serviceLabel,
+        date: booking.date,
+        time: booking.time,
+        price: booking.finalPrice != null ? `$${booking.finalPrice}` : "Custom quote",
+        deposit: `$${booking.depositAmount}`,
+        notes: booking.notes || "",
+      }),
+    });
+  } catch (err) {
+    console.error("Netlify form notification failed:", err);
+  }
+}
 
 const SIZE_TIERS = [
   { id: "condo", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 250, Icon: Building2 },
