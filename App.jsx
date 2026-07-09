@@ -66,36 +66,7 @@ const CONTACT = {
   area: "Serving Greater Toronto Area (GTA)",
   instagram: "@gracecohomeservices",
   facebook: "@gracecohomeservices",
-}; 
-function encodeFormData(data) {
-  return Object.keys(data)
-    .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k] ?? ""))
-    .join("&");
-}
-
-async function notifyNetlifyBooking(booking) {
-  try {
-    await fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: encodeFormData({
-        "form-name": "booking-request",
-        name: booking.name,
-        email: booking.email,
-        phone: booking.phone,
-        address: booking.address,
-        service: booking.serviceLabel,
-        date: booking.date,
-        time: booking.time,
-        price: booking.finalPrice != null ? `$${booking.finalPrice}` : "Custom quote",
-        deposit: `$${booking.depositAmount}`,
-        notes: booking.notes || "",
-      }),
-    });
-  } catch (err) {
-    console.error("Netlify form notification failed:", err);
-  }
-}
+};
 
 const SIZE_TIERS = [
   { id: "condo", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 250, Icon: Building2 },
@@ -617,7 +588,7 @@ function HomePage({ navigate }) {
             <button onClick={() => navigate("book")} className="gc-btn gc-btn-primary" style={{ marginTop: 26 }}>Book Your Free Consultation <ArrowRight size={16} /></button>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", boxShadow: "0 18px 40px -16px rgba(43,36,32,0.35)" }}>
-            <img src={GALLERY_BEDROOM} alt="Beautifully organized bedroom" style={{ width: "100%", display: "block" }} />
+            <img src={GALLERY_BATH} alt="Sparkling clean bathroom" style={{ width: "100%", display: "block" }} />
           </div>
         </div>
       </section>
@@ -756,13 +727,12 @@ function ServicesPage({ navigate }) {
 
       {/* Service category tabs */}
       <div style={{ display: "flex", gap: 10, marginBottom: 32, flexWrap: "wrap", justifyContent: "center" }}>
-<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-            {[["concierge","🛎️","Home Concierge"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty Services"]].map(([id,icon,label]) => (
-              <button key={id} onClick={() => set("serviceCategory", id)} style={{ padding: 14, borderRadius: 12, border: `1.5px solid ${form.serviceCategory === id ? C.taupe : C.line}`, background: form.serviceCategory === id ? C.creamDeep : C.white, fontFamily: "Jost", fontSize: 14, fontWeight: 600, cursor: "pointer", color: form.serviceCategory === id ? C.taupeDark : C.charcoal, textAlign: "center" }}>
-                <div style={{ fontSize: 22, marginBottom: 4 }}>{icon}</div>{label}
-              </button>
-            ))}
-          </div>
+        {[["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty"]].map(([id,icon,label]) => (
+          <button key={id} onClick={() => setActiveTab(id)} style={{ padding: "10px 20px", borderRadius: 999, border: `1.5px solid ${activeTab === id ? C.taupe : C.line}`, background: activeTab === id ? C.taupe : C.white, fontFamily: "Jost", fontWeight: 600, fontSize: 14, cursor: "pointer", color: activeTab === id ? C.white : C.charcoal }}>
+            {icon} {label}
+          </button>
+        ))}
+      </div>
 
       {/* New client discount toggle */}
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginBottom: 28 }}>
@@ -896,7 +866,7 @@ function ServicesPage({ navigate }) {
         <div className="gc-card" style={{ padding: 22 }}>
           <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 12 }}>What's Not Included</h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {["Exterior windows (interior available as add-on)","Biohazard or hazardous material cleanup","Carpet shampooing or steam cleaning","Pest or rodent cleanup","Heavy furniture moving","Exterior of the home","Hoarding or extreme clutter cleanup (contact us)"].map((item) => (
+            {["Exterior windows (interior available as add-on)","Biohazard or hazardous material cleanup","Carpet shampooing or steam cleaning","Pest or rodent cleanup","Heavy furniture moving","Exterior of the home or garage","Hoarding or extreme clutter cleanup (contact us)"].map((item) => (
               <div key={item} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
                 <X size={14} color={C.coral} style={{ flexShrink: 0, marginTop: 2 }} /> {item}
               </div>
@@ -916,19 +886,19 @@ function ServicesPage({ navigate }) {
 
 const DEEP_TIERS = [
   { id: "condo-deep", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 350 },
-  { id: "small-deep", label: "Small Home", sub: "1,000-1,500 sq ft", price: 400 },
-  { id: "family-deep", label: "Family Home", sub: "1,500-2,000 sq ft", price: 475 },
-  { id: "large-deep", label: "Large Home", sub: "2,000-2,500 sq ft", price: 575 },
-  { id: "xl-deep", label: "Extra Large Home", sub: "2,500-3,000 sq ft", price: 700 },
-  { id: "custom-deep", label: "Larger Home", sub: "3,000+ sq ft, custom quote", price: null },
+  { id: "small-deep", label: "Small Home", sub: "1,000–1,500 sq ft", price: 400 },
+  { id: "family-deep", label: "Family Home", sub: "1,500–2,000 sq ft", price: 475 },
+  { id: "large-deep", label: "Large Home", sub: "2,000–2,500 sq ft", price: 575 },
+  { id: "xl-deep", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 700 },
+  { id: "custom-deep", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null },
 ];
 const MOVEINOUT_TIERS = [
   { id: "condo-mio", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 300 },
-  { id: "small-mio", label: "Small Home", sub: "1,000-1,500 sq ft", price: 400 },
-  { id: "family-mio", label: "Family Home", sub: "1,500-2,000 sq ft", price: 450 },
-  { id: "large-mio", label: "Large Home", sub: "2,000-2,500 sq ft", price: 550 },
-  { id: "xl-mio", label: "Extra Large Home", sub: "2,500-3,000 sq ft", price: 700 },
-  { id: "custom-mio", label: "Larger Home", sub: "3,000+ sq ft, custom quote", price: null },
+  { id: "small-mio", label: "Small Home", sub: "1,000–1,500 sq ft", price: 400 },
+  { id: "family-mio", label: "Family Home", sub: "1,500–2,000 sq ft", price: 450 },
+  { id: "large-mio", label: "Large Home", sub: "2,000–2,500 sq ft", price: 550 },
+  { id: "xl-mio", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 700 },
+  { id: "custom-mio", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null },
 ];
 const SPECIALTY_LIST = [
   { id: "home-org", label: "Home Organization", priceLabel: "Starting at $100" },
@@ -946,44 +916,9 @@ const RECURRING_OPTIONS = [
   { id: "monthly", label: "Monthly", discount: 0.05, note: "5% off every clean" },
 ];
 const PROPERTY_TYPES = ["Apartment / Condo", "Detached Home", "Townhouse", "Semi-Detached", "Other"];
-const TIME_WINDOWS = ["Morning (8:00 AM - 12:00 PM)", "Afternoon (12:00 PM - 4:00 PM)", "Evening (4:00 PM - 8:00 PM)", "Flexible"];
-const CONCIERGE_LIST = [
-  { group: "Home Reset", items: [
-    { id: "hr-kitchen", label: "Kitchen reset and tidy" },
-    { id: "hr-laundry", label: "Laundry (wash, fold and put away)" },
-    { id: "hr-tidy", label: "Light household tidying" },
-    { id: "hr-bed", label: "Bed making" },
-    { id: "hr-nextday", label: "Preparing your home for the next day" },
-  ]},
-  { group: "Kitchen and Meal Planning", items: [
-    { id: "km-planning", label: "Weekly meal planning" },
-    { id: "km-grocerylist", label: "Grocery list creation" },
-    { id: "km-groceryorder", label: "Online grocery ordering (client pays)" },
-    { id: "km-pantry", label: "Pantry and refrigerator organization" },
-    { id: "km-wash", label: "Wash and prepare fruits and vegetables" },
-    { id: "km-ingredient", label: "Ingredient preparation for meals" },
-    { id: "km-lunch", label: "Lunch preparation (client-provided food)" },
-  ]},
-  { group: "Household Organization", items: [
-    { id: "ho-pantry", label: "Pantry organization" },
-    { id: "ho-closet", label: "Closet organization" },
-    { id: "ho-linen", label: "Linen closet organization" },
-    { id: "ho-toy", label: "Toy and playroom organization" },
-    { id: "ho-seasonal", label: "Seasonal organization" },
-    { id: "ho-declutter", label: "Decluttering and organization projects" },
-  ]},
-  { group: "Household Management", items: [
-    { id: "hm-calendar", label: "Family calendar organization" },
-    { id: "hm-inventory", label: "Household inventory tracking" },
-    { id: "hm-restock", label: "Restocking reminders for household essentials" },
-    { id: "hm-package", label: "Package and delivery organization" },
-    { id: "hm-vacation", label: "Vacation preparation" },
-    { id: "hm-guest", label: "Guest preparation" },
-    { id: "hm-airbnb", label: "Airbnb turnover support" },
-  ]},
-];
+const TIME_WINDOWS = ["Morning (8:00 AM – 12:00 PM)", "Afternoon (12:00 PM – 4:00 PM)", "Evening (4:00 PM – 8:00 PM)", "Flexible"];
+
 function calcDeposit(category, price) {
-  if (category === "concierge") return 0;
   if (category === "moveinout" && price != null && price > 500) return Math.round(price * 0.25);
   return 100;
 }
@@ -1010,14 +945,13 @@ function BookPage({ bookings, addBooking, navigate }) {
     recurring: "one-time",
     serviceCategory: "basic",
     basicTierId: "small", deepTierId: "family-deep", moveinoutTierId: "family-mio", moveType: "movein",
-  specialtyServices: [], conciergeServices: [],
+    specialtyServices: [],
     date: "", timeWindow: TIME_WINDOWS[0],
     someoneHome: null, entryInstructions: "", areasAttention: "", notes: "",
     agreeDeposit: false, agreeTerms: false,
   });
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const toggleSpecialty = (id) => setForm(f => ({ ...f, specialtyServices: f.specialtyServices.includes(id) ? f.specialtyServices.filter(s => s !== id) : [...f.specialtyServices, id] }));
-  const toggleConcierge = (id) => setForm(f => ({ ...f, conciergeServices: f.conciergeServices.includes(id) ? f.conciergeServices.filter(s => s !== id) : [...f.conciergeServices, id] }));
   const newClient = useMemo(() => !isReturningCustomer(bookings, form.email, form.phone), [bookings, form.email, form.phone]);
   const activeTierId = form.serviceCategory === "basic" ? form.basicTierId : form.serviceCategory === "deep" ? form.deepTierId : form.serviceCategory === "moveinout" ? form.moveinoutTierId : null;
   const priceCalc = useMemo(() => calcPriceBreakdown(form.serviceCategory, activeTierId, form.recurring, newClient), [form.serviceCategory, activeTierId, form.recurring, newClient]);
@@ -1026,10 +960,9 @@ function BookPage({ bookings, addBooking, navigate }) {
     if (form.serviceCategory === "basic") return `Basic Cleaning — ${SIZE_TIERS.find(t => t.id === form.basicTierId)?.label || ""}`;
     if (form.serviceCategory === "deep") return `Deep Cleaning — ${DEEP_TIERS.find(t => t.id === form.deepTierId)?.label || ""}`;
     if (form.serviceCategory === "moveinout") return `${form.moveType === "movein" ? "Move-In" : "Move-Out"} Cleaning — ${MOVEINOUT_TIERS.find(t => t.id === form.moveinoutTierId)?.label || ""}`;
-    if (form.serviceCategory === "concierge") return "Home Concierge Consultation";
     const sel = SPECIALTY_LIST.filter(s => form.specialtyServices.includes(s.id)).map(s => s.label);
     return sel.length > 0 ? `Specialty: ${sel.join(", ")}` : "Specialty Services";
-  }, [form.serviceCategory, form.basicTierId, form.deepTierId, form.moveinoutTierId, form.moveType, form.specialtyServices, form.conciergeServices]);
+  }, [form.serviceCategory, form.basicTierId, form.deepTierId, form.moveinoutTierId, form.moveType, form.specialtyServices]);
 
   const canNext1 = form.name.trim() && form.email.trim() && form.phone.trim() && form.address.trim() && form.city.trim();
   const canNext2 = form.propertyType !== "";
@@ -1047,13 +980,13 @@ function BookPage({ bookings, addBooking, navigate }) {
       basePrice: priceCalc.base,
       discount: (priceCalc.newClientDiscount || 0) + (priceCalc.recurringDiscount || 0),
       finalPrice: priceCalc.final,
-   depositAmount: form.serviceCategory === "concierge" ? 0 : (priceCalc.final != null ? deposit : 100),
+      depositAmount: priceCalc.final != null ? deposit : 100,
       isNewCustomer: newClient, recurring: form.recurring,
       propertyType: form.propertyType, sqFootage: form.sqFootage, bedrooms: form.bedrooms, bathrooms: form.bathrooms, finishedBasement: form.finishedBasement,
       date: form.date, time: form.timeWindow,
       someoneHome: form.someoneHome, entryInstructions: form.entryInstructions.trim(),
       areasAttention: form.areasAttention.trim(), notes: form.notes.trim(),
- specialtyServices: form.specialtyServices, conciergeServices: form.conciergeServices, moveType: form.moveType,
+      specialtyServices: form.specialtyServices, moveType: form.moveType,
       status: "pending_confirmation", paymentStatus: "unpaid", cancellationFee: 0,
     };
     await addBooking(booking);
@@ -1152,7 +1085,9 @@ function BookPage({ bookings, addBooking, navigate }) {
           <h2 className="gc-serif" style={{ fontSize: 19, marginBottom: 16 }}>What service do you need?</h2>
           {newClient && <div style={{ marginBottom: 16 }}><NewClientBanner compact /></div>}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-{[["concierge","🛎️","Home Concierge"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty Services"]].map(([id,icon,label]) => (
+            {[["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty Services"]].map(([id,icon,label]) => (
+              <button key={id} onClick={() => set("serviceCategory", id)} style={{ padding: 14, borderRadius: 12, border: `1.5px solid ${form.serviceCategory === id ? C.taupe : C.line}`, background: form.serviceCategory === id ? C.creamDeep : C.white, fontFamily: "Jost", fontSize: 14, fontWeight: 600, cursor: "pointer", color: form.serviceCategory === id ? C.taupeDark : C.charcoal, textAlign: "center" }}>
+                <div style={{ fontSize: 22, marginBottom: 4 }}>{icon}</div>{label}
               </button>
             ))}
           </div>
@@ -1198,27 +1133,6 @@ function BookPage({ bookings, addBooking, navigate }) {
                   </button>
                 ))}
               </div>
-            </div>
-          )}
-
-
-          {form.serviceCategory === "concierge" && (
-            <div>
-              <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply, you're not limited to one. We'll follow up to schedule your free in-home consultation.</p>
-              {CONCIERGE_LIST.map(g => (
-                <div key={g.group} style={{ marginBottom: 18 }}>
-                  <div style={{ fontSize: 12.5, fontWeight: 700, color: C.taupeDark, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>{g.group}</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {g.items.map(s => (
-                      <label key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 12, border: `1.5px solid ${form.conciergeServices.includes(s.id) ? C.taupe : C.line}`, background: form.conciergeServices.includes(s.id) ? C.creamDeep : C.white, cursor: "pointer" }}>
-                        <input type="checkbox" checked={form.conciergeServices.includes(s.id)} onChange={() => toggleConcierge(s.id)} />
-                        <span style={{ fontSize: 14, fontWeight: 500 }}>{s.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              <p style={{ fontSize: 13, color: C.charcoalSoft, fontStyle: "italic" }}>Have something else in mind? Let us know in the notes below, we'll cover it during your consultation.</p>
             </div>
           )}
 
@@ -1697,12 +1611,11 @@ function AboutPage({ navigate }) {
 /* ============================== GALLERY PAGE ============================== */
 function GalleryPage({ navigate }) {
   const sections = [
-    { label: "Kitchens", photos: [GALLERY_KITCHEN2, GALLERY_KITCHEN3] },
-    { label: "Bathrooms", photos: [GALLERY_BATH2, GALLERY_BATH3, GALLERY_BATH4] },
+    { label: "Kitchens", photos: [GALLERY_KITCHEN2, GALLERY_KITCHEN3, HERO_IMG] },
+    { label: "Bathrooms", photos: [GALLERY_BATH, GALLERY_BATH2, GALLERY_BATH3, GALLERY_BATH4] },
     { label: "Bedrooms", photos: [GALLERY_BEDROOM, GALLERY_BEDROOM2, GALLERY_BEDROOM3] },
     { label: "Living & Dining", photos: [GALLERY_LIVING, GALLERY_DINING1, GALLERY_DINING2] },
     { label: "Laundry", photos: [GALLERY_LAUNDRY] },
-    { label: "Move-Ins / Move-Outs", photos: [] },
   ];
   return (
     <div className="gc-fade-in gc-container" style={{ padding: "56px 22px 90px" }}>
@@ -1714,17 +1627,13 @@ function GalleryPage({ navigate }) {
       {sections.map((section) => (
         <div key={section.label} style={{ marginBottom: 40 }}>
           <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.taupeDark, marginBottom: 14, paddingBottom: 8, borderBottom: `2px solid ${C.creamDeep}` }}>{section.label}</div>
-          {section.photos.length === 0 ? (
-            <p style={{ color: C.charcoalSoft, fontStyle: "italic" }}>More pictures coming soon!</p>
-          ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
-              {section.photos.map((photo, i) => (
-                <div key={i} style={{ borderRadius: 12, overflow: "hidden", aspectRatio: "4/3" }}>
-                  <img src={photo} alt={section.label} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                </div>
-              ))}
-            </div>
-          )}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
+            {section.photos.map((photo, i) => (
+              <div key={i} style={{ borderRadius: 12, overflow: "hidden", aspectRatio: "4/3" }}>
+                <img src={photo} alt={section.label} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              </div>
+            ))}
+          </div>
         </div>
       ))}
       <div style={{ textAlign: "center", marginTop: 40 }}>
@@ -1990,10 +1899,9 @@ export default function App() {
     setBookings(data);
   }, []);
 
-const addBooking = useCallback(async (booking) => {
+  const addBooking = useCallback(async (booking) => {
     await insertBooking(booking);
     setBookings((prev) => [booking, ...prev]);
-    notifyNetlifyBooking(booking);
   }, []);
 
   const updateBooking = useCallback(async (id, updates) => {
@@ -2029,3 +1937,4 @@ const addBooking = useCallback(async (booking) => {
     </div>
   );
 }
+
