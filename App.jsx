@@ -946,8 +946,43 @@ const RECURRING_OPTIONS = [
 ];
 const PROPERTY_TYPES = ["Apartment / Condo", "Detached Home", "Townhouse", "Semi-Detached", "Other"];
 const TIME_WINDOWS = ["Morning (8:00 AM – 12:00 PM)", "Afternoon (12:00 PM – 4:00 PM)", "Evening (4:00 PM – 8:00 PM)", "Flexible"];
-
+const CONCIERGE_LIST = [
+  { group: "Home Reset", items: [
+    { id: "hr-kitchen", label: "Kitchen reset and tidy" },
+    { id: "hr-laundry", label: "Laundry (wash, fold & put away)" },
+    { id: "hr-tidy", label: "Light household tidying" },
+    { id: "hr-bed", label: "Bed making" },
+    { id: "hr-nextday", label: "Preparing your home for the next day" },
+  ]},
+  { group: "Kitchen & Meal Planning", items: [
+    { id: "km-planning", label: "Weekly meal planning" },
+    { id: "km-grocerylist", label: "Grocery list creation" },
+    { id: "km-groceryorder", label: "Online grocery ordering (client pays)" },
+    { id: "km-pantry", label: "Pantry and refrigerator organization" },
+    { id: "km-wash", label: "Wash and prepare fruits and vegetables" },
+    { id: "km-ingredient", label: "Ingredient preparation for meals" },
+    { id: "km-lunch", label: "Lunch preparation (client-provided food)" },
+  ]},
+  { group: "Household Organization", items: [
+    { id: "ho-pantry", label: "Pantry organization" },
+    { id: "ho-closet", label: "Closet organization" },
+    { id: "ho-linen", label: "Linen closet organization" },
+    { id: "ho-toy", label: "Toy and playroom organization" },
+    { id: "ho-seasonal", label: "Seasonal organization" },
+    { id: "ho-declutter", label: "Decluttering and organization projects" },
+  ]},
+  { group: "Household Management", items: [
+    { id: "hm-calendar", label: "Family calendar organization" },
+    { id: "hm-inventory", label: "Household inventory tracking" },
+    { id: "hm-restock", label: "Restocking reminders for household essentials" },
+    { id: "hm-package", label: "Package and delivery organization" },
+    { id: "hm-vacation", label: "Vacation preparation" },
+    { id: "hm-guest", label: "Guest preparation" },
+    { id: "hm-airbnb", label: "Airbnb turnover support" },
+  ]},
+];
 function calcDeposit(category, price) {
+  if (category === "concierge") return 0;
   if (category === "moveinout" && price != null && price > 500) return Math.round(price * 0.25);
   return 100;
 }
@@ -974,13 +1009,14 @@ function BookPage({ bookings, addBooking, navigate }) {
     recurring: "one-time",
     serviceCategory: "basic",
     basicTierId: "small", deepTierId: "family-deep", moveinoutTierId: "family-mio", moveType: "movein",
-    specialtyServices: [],
+  specialtyServices: [], conciergeServices: [],
     date: "", timeWindow: TIME_WINDOWS[0],
     someoneHome: null, entryInstructions: "", areasAttention: "", notes: "",
     agreeDeposit: false, agreeTerms: false,
   });
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const toggleSpecialty = (id) => setForm(f => ({ ...f, specialtyServices: f.specialtyServices.includes(id) ? f.specialtyServices.filter(s => s !== id) : [...f.specialtyServices, id] }));
+  const toggleConcierge = (id) => setForm(f => ({ ...f, conciergeServices: f.conciergeServices.includes(id) ? f.conciergeServices.filter(s => s !== id) : [...f.conciergeServices, id] }));
   const newClient = useMemo(() => !isReturningCustomer(bookings, form.email, form.phone), [bookings, form.email, form.phone]);
   const activeTierId = form.serviceCategory === "basic" ? form.basicTierId : form.serviceCategory === "deep" ? form.deepTierId : form.serviceCategory === "moveinout" ? form.moveinoutTierId : null;
   const priceCalc = useMemo(() => calcPriceBreakdown(form.serviceCategory, activeTierId, form.recurring, newClient), [form.serviceCategory, activeTierId, form.recurring, newClient]);
@@ -989,9 +1025,10 @@ function BookPage({ bookings, addBooking, navigate }) {
     if (form.serviceCategory === "basic") return `Basic Cleaning — ${SIZE_TIERS.find(t => t.id === form.basicTierId)?.label || ""}`;
     if (form.serviceCategory === "deep") return `Deep Cleaning — ${DEEP_TIERS.find(t => t.id === form.deepTierId)?.label || ""}`;
     if (form.serviceCategory === "moveinout") return `${form.moveType === "movein" ? "Move-In" : "Move-Out"} Cleaning — ${MOVEINOUT_TIERS.find(t => t.id === form.moveinoutTierId)?.label || ""}`;
+ if (form.serviceCategory === "concierge") return "Home Concierge Consultation";
     const sel = SPECIALTY_LIST.filter(s => form.specialtyServices.includes(s.id)).map(s => s.label);
     return sel.length > 0 ? `Specialty: ${sel.join(", ")}` : "Specialty Services";
-  }, [form.serviceCategory, form.basicTierId, form.deepTierId, form.moveinoutTierId, form.moveType, form.specialtyServices]);
+  }, [form.serviceCategory, form.basicTierId, form.deepTierId, form.moveinoutTierId, form.moveType, form.specialtyServices, form.conciergeServices]);
 
   const canNext1 = form.name.trim() && form.email.trim() && form.phone.trim() && form.address.trim() && form.city.trim();
   const canNext2 = form.propertyType !== "";
@@ -1009,13 +1046,13 @@ function BookPage({ bookings, addBooking, navigate }) {
       basePrice: priceCalc.base,
       discount: (priceCalc.newClientDiscount || 0) + (priceCalc.recurringDiscount || 0),
       finalPrice: priceCalc.final,
-      depositAmount: priceCalc.final != null ? deposit : 100,
+   depositAmount: form.serviceCategory === "concierge" ? 0 : (priceCalc.final != null ? deposit : 100),
       isNewCustomer: newClient, recurring: form.recurring,
       propertyType: form.propertyType, sqFootage: form.sqFootage, bedrooms: form.bedrooms, bathrooms: form.bathrooms, finishedBasement: form.finishedBasement,
       date: form.date, time: form.timeWindow,
       someoneHome: form.someoneHome, entryInstructions: form.entryInstructions.trim(),
       areasAttention: form.areasAttention.trim(), notes: form.notes.trim(),
-      specialtyServices: form.specialtyServices, moveType: form.moveType,
+ specialtyServices: form.specialtyServices, conciergeServices: form.conciergeServices, moveType: form.moveType,
       status: "pending_confirmation", paymentStatus: "unpaid", cancellationFee: 0,
     };
     await addBooking(booking);
@@ -1114,9 +1151,7 @@ function BookPage({ bookings, addBooking, navigate }) {
           <h2 className="gc-serif" style={{ fontSize: 19, marginBottom: 16 }}>What service do you need?</h2>
           {newClient && <div style={{ marginBottom: 16 }}><NewClientBanner compact /></div>}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-            {[["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty Services"]].map(([id,icon,label]) => (
-              <button key={id} onClick={() => set("serviceCategory", id)} style={{ padding: 14, borderRadius: 12, border: `1.5px solid ${form.serviceCategory === id ? C.taupe : C.line}`, background: form.serviceCategory === id ? C.creamDeep : C.white, fontFamily: "Jost", fontSize: 14, fontWeight: 600, cursor: "pointer", color: form.serviceCategory === id ? C.taupeDark : C.charcoal, textAlign: "center" }}>
-                <div style={{ fontSize: 22, marginBottom: 4 }}>{icon}</div>{label}
+{[["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty Services"]].map(([id,icon,label]) => (
               </button>
             ))}
           </div>
@@ -1164,7 +1199,25 @@ function BookPage({ bookings, addBooking, navigate }) {
               </div>
             </div>
           )}
-
+{form.serviceCategory === "concierge" && (
+            <div>
+              <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply — you're not limited to one. We'll follow up to schedule your free in-home consultation.</p>
+              {CONCIERGE_LIST.map(g => (
+                <div key={g.group} style={{ marginBottom: 18 }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 700, color: C.taupeDark, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>{g.group}</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {g.items.map(s => (
+                      <label key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 12, border: `1.5px solid ${form.conciergeServices.includes(s.id) ? C.taupe : C.line}`, background: form.conciergeServices.includes(s.id) ? C.creamDeep : C.white, cursor: "pointer" }}>
+                        <input type="checkbox" checked={form.conciergeServices.includes(s.id)} onChange={() => toggleConcierge(s.id)} />
+                        <span style={{ fontSize: 14, fontWeight: 500 }}>{s.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <p style={{ fontSize: 13, color: C.charcoalSoft, fontStyle: "italic" }}>Have something else in mind? Let us know in the notes below — we'll cover it during your consultation.</p>
+            </div>
+          )}
           {form.serviceCategory === "specialty" && (
             <div>
               <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply — we'll follow up with a custom quote.</p>
