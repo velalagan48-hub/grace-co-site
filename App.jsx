@@ -1200,7 +1200,7 @@ if (form.serviceCategory === "concierge") return "Home Concierge Consultation";
               </div>
             </div>
           )}
-{form.serviceCategory === "concierge" && (
+
             <div>
               <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply — you're not limited to one. We'll follow up to schedule your free in-home consultation.</p>
               {CONCIERGE_LIST.map(g => (
