@@ -756,12 +756,13 @@ function ServicesPage({ navigate }) {
 
       {/* Service category tabs */}
       <div style={{ display: "flex", gap: 10, marginBottom: 32, flexWrap: "wrap", justifyContent: "center" }}>
-        {[["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty"]].map(([id,icon,label]) => (
-          <button key={id} onClick={() => setActiveTab(id)} style={{ padding: "10px 20px", borderRadius: 999, border: `1.5px solid ${activeTab === id ? C.taupe : C.line}`, background: activeTab === id ? C.taupe : C.white, fontFamily: "Jost", fontWeight: 600, fontSize: 14, cursor: "pointer", color: activeTab === id ? C.white : C.charcoal }}>
-            {icon} {label}
-          </button>
-        ))}
-      </div>
+<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+            {[["concierge","🛎️","Home Concierge"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty Services"]].map(([id,icon,label]) => (
+              <button key={id} onClick={() => set("serviceCategory", id)} style={{ padding: 14, borderRadius: 12, border: `1.5px solid ${form.serviceCategory === id ? C.taupe : C.line}`, background: form.serviceCategory === id ? C.creamDeep : C.white, fontFamily: "Jost", fontSize: 14, fontWeight: 600, cursor: "pointer", color: form.serviceCategory === id ? C.taupeDark : C.charcoal, textAlign: "center" }}>
+                <div style={{ fontSize: 22, marginBottom: 4 }}>{icon}</div>{label}
+              </button>
+            ))}
+          </div>
 
       {/* New client discount toggle */}
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginBottom: 28 }}>
