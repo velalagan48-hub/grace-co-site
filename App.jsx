@@ -562,7 +562,7 @@ function HomePage({ navigate }) {
               <div style={{ fontSize: 32, marginBottom: 10 }}>{s.emoji}</div>
               <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 6 }}>{s.title}</div>
               <div style={{ fontSize: 13.5, color: C.charcoalSoft, lineHeight: 1.6, marginBottom: 14 }}>{s.desc}</div>
-              <button onClick={() => navigate("services")} style={{ background: "none", border: "none", cursor: "pointer", color: C.taupeDark, fontWeight: 600, fontSize: 13.5, fontFamily: "Jost", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+              <button onClick={() => navigate("services", s.id)} style={{ background: "none", border: "none", cursor: "pointer", color: C.taupeDark, fontWeight: 600, fontSize: 13.5, fontFamily: "Jost", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
                 Learn more <ArrowRight size={13} />
               </button>
             </div>
@@ -711,9 +711,9 @@ function HomePage({ navigate }) {
 }
 
 /* ============================== SERVICES & PRICING PAGE ============================== */
-function ServicesPage({ navigate }) {
+function ServicesPage({ navigate, initialTab }) {
   const [previewDiscount, setPreviewDiscount] = useState(false);
-  const [activeTab, setActiveTab] = useState("basic");
+  const [activeTab, setActiveTab] = useState(initialTab || "basic");
   return (
     <div className="gc-fade-in gc-container" style={{ padding: "48px 22px 80px" }}>
       <div style={{ textAlign: "center", marginBottom: 28 }}>
@@ -833,7 +833,7 @@ function ServicesPage({ navigate }) {
                       {p.discount > 0 && <div style={{ fontSize: 11.5, color: C.coral, fontWeight: 600 }}>Save {money(p.discount)}!</div>}
                     </div>
                   )}
-                  <button onClick={() => navigate("book")} className="gc-btn gc-btn-outline gc-btn-sm gc-btn-block" style={{ marginTop: 14 }}>Book This</button>
+                  <button onClick={() => navigate("book", "basic")} className="gc-btn gc-btn-outline gc-btn-sm gc-btn-block" style={{ marginTop: 14 }}>Book This</button>
                 </div>
               );
             })}
@@ -870,7 +870,7 @@ function ServicesPage({ navigate }) {
                 <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{t.label}</div>
                 <div style={{ fontSize: 12.5, color: C.charcoalSoft, marginBottom: 14 }}>{t.sub}</div>
                 {t.price ? <div className="gc-serif" style={{ fontSize: 26, fontWeight: 600 }}>{money(t.price)}</div> : <div className="gc-serif" style={{ fontSize: 22, color: C.taupeDark }}>Custom quote</div>}
-                <button onClick={() => navigate("book")} className="gc-btn gc-btn-outline gc-btn-sm gc-btn-block" style={{ marginTop: 14 }}>Book This</button>
+                <button onClick={() => navigate("book", "deep")} className="gc-btn gc-btn-outline gc-btn-sm gc-btn-block" style={{ marginTop: 14 }}>Book This</button>
               </div>
             ))}
           </div>
@@ -896,7 +896,7 @@ function ServicesPage({ navigate }) {
                 <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{t.label}</div>
                 <div style={{ fontSize: 12.5, color: C.charcoalSoft, marginBottom: 14 }}>{t.sub}</div>
                 {t.price ? <><div style={{ fontSize: 11, color: C.charcoalSoft, textTransform: "uppercase", letterSpacing: "0.05em" }}>Starting at</div><div className="gc-serif" style={{ fontSize: 26, fontWeight: 600 }}>{money(t.price)}</div></> : <div className="gc-serif" style={{ fontSize: 22, color: C.taupeDark }}>Custom quote</div>}
-                <button onClick={() => navigate("book")} className="gc-btn gc-btn-outline gc-btn-sm gc-btn-block" style={{ marginTop: 14 }}>Book This</button>
+                <button onClick={() => navigate("book", "moveinout")} className="gc-btn gc-btn-outline gc-btn-sm gc-btn-block" style={{ marginTop: 14 }}>Book This</button>
               </div>
             ))}
           </div>
@@ -946,7 +946,7 @@ function ServicesPage({ navigate }) {
       </div>
 
       <div style={{ textAlign: "center", marginTop: 36 }}>
-        <button onClick={() => navigate("book")} className="gc-btn gc-btn-primary">Book Now <ArrowRight size={16} /></button>
+        <button onClick={() => navigate("book", activeTab)} className="gc-btn gc-btn-primary">Book Now <ArrowRight size={16} /></button>
       </div>
     </div>
   );
@@ -2057,6 +2057,7 @@ export default function App() {
   const [loaded, setLoaded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookCategory, setBookCategory] = useState("basic");
+  const [servicesTab, setServicesTab] = useState("basic");
 
   useEffect(() => {
     (async () => {
@@ -2081,9 +2082,10 @@ export default function App() {
     setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
   }, []);
 
-  const navigate = (p, category) => {
+  const navigate = (p, param) => {
     setPage(p);
-    if (p === "book") setBookCategory(category || "basic");
+    if (p === "book") setBookCategory(param || "basic");
+    if (p === "services") setServicesTab(param || "basic");
     setMenuOpen(false);
     window.scrollTo(0, 0);
   };
@@ -2099,7 +2101,7 @@ export default function App() {
         <>
           {page === "home" && <HomePage navigate={navigate} />}
           {page === "about" && <AboutPage navigate={navigate} />}
-          {page === "services" && <ServicesPage navigate={navigate} />}
+          {page === "services" && <ServicesPage navigate={navigate} initialTab={servicesTab} />}
           {page === "gallery" && <GalleryPage navigate={navigate} />}
           {page === "faq" && <FAQPage />}
           {page === "contact" && <ContactPage navigate={navigate} />}
