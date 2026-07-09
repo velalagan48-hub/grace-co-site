@@ -1183,24 +1183,13 @@ if (form.serviceCategory === "concierge") return "Home Concierge Consultation";
             </div>
           )}
 
-          {form.serviceCategory === "moveinout" && (
-            <div>
-              <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-                {[["movein","Moving In"],["moveout","Moving Out"]].map(([id,label]) => (
-                  <button key={id} onClick={() => set("moveType", id)} style={{ flex: 1, padding: 10, borderRadius: 10, border: `1.5px solid ${form.moveType === id ? C.taupe : C.line}`, background: form.moveType === id ? C.creamDeep : C.white, fontFamily: "Jost", fontWeight: 600, fontSize: 14, cursor: "pointer", color: form.moveType === id ? C.taupeDark : C.charcoal }}>{label}</button>
-                ))}
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {MOVEINOUT_TIERS.map(t => (
-                  <button key={t.id} onClick={() => set("moveinoutTierId", t.id)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${form.moveinoutTierId === t.id ? C.taupe : C.line}`, background: form.moveinoutTierId === t.id ? C.creamDeep : C.white, cursor: "pointer", textAlign: "left", width: "100%", fontFamily: "Jost" }}>
-                    <div><div style={{ fontWeight: 500, fontSize: 14 }}>{t.label}</div><div style={{ fontSize: 12, color: C.charcoalSoft }}>{t.sub}</div></div>
-                    <div style={{ fontWeight: 600, color: C.taupeDark }}>{t.price ? money(t.price) : "Custom"}</div>
-                  </button>
+</button>
                 ))}
               </div>
             </div>
           )}
 
+          {form.serviceCategory === "concierge" && (
             <div>
               <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply — you're not limited to one. We'll follow up to schedule your free in-home consultation.</p>
               {CONCIERGE_LIST.map(g => (
@@ -1219,26 +1208,8 @@ if (form.serviceCategory === "concierge") return "Home Concierge Consultation";
               <p style={{ fontSize: 13, color: C.charcoalSoft, fontStyle: "italic" }}>Have something else in mind? Let us know in the notes below — we'll cover it during your consultation.</p>
             </div>
           )}
-            {form.serviceCategory === "concierge" && (
-            <div>
-              <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply — you're not limited to one. We'll follow up to schedule your free in-home consultation.</p>
-              {CONCIERGE_LIST.map(g => (
-                <div key={g.group} style={{ marginBottom: 18 }}>
-                  <div style={{ fontSize: 12.5, fontWeight: 700, color: C.taupeDark, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>{g.group}</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {g.items.map(s => (
-                      <label key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 12, border: `1.5px solid ${form.conciergeServices.includes(s.id) ? C.taupe : C.line}`, background: form.conciergeServices.includes(s.id) ? C.creamDeep : C.white, cursor: "pointer" }}>
-                        <input type="checkbox" checked={form.conciergeServices.includes(s.id)} onChange={() => toggleConcierge(s.id)} />
-                        <span style={{ fontSize: 14, fontWeight: 500 }}>{s.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              <p style={{ fontSize: 13, color: C.charcoalSoft, fontStyle: "italic" }}>Have something else in mind? Let us know in the notes below — we'll cover it during your consultation.</p>
-            </div>
-          )}
-    
+
+          {form.serviceCategory === "specialty" && (
             <div>
               <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply — we'll follow up with a custom quote.</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -1254,6 +1225,7 @@ if (form.serviceCategory === "concierge") return "Home Concierge Consultation";
               </div>
             </div>
           )}
+          <NavButtons onBack={() => setStep(2)} onNext={() => setStep(4)} nextDisabled={!canNext3} />
           <NavButtons onBack={() => setStep(2)} onNext={() => setStep(4)} nextDisabled={!canNext3} />
         </div>
       )}
