@@ -727,7 +727,7 @@ function ServicesPage({ navigate }) {
 
       {/* Service category tabs */}
       <div style={{ display: "flex", gap: 10, marginBottom: 32, flexWrap: "wrap", justifyContent: "center" }}>
-        {[["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty"]].map(([id,icon,label]) => (
+        {[["concierge","🛎️","Home Concierge"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty"]].map(([id,icon,label]) => (
           <button key={id} onClick={() => setActiveTab(id)} style={{ padding: "10px 20px", borderRadius: 999, border: `1.5px solid ${activeTab === id ? C.taupe : C.line}`, background: activeTab === id ? C.taupe : C.white, fontFamily: "Jost", fontWeight: 600, fontSize: 14, cursor: "pointer", color: activeTab === id ? C.white : C.charcoal }}>
             {icon} {label}
           </button>
@@ -742,6 +742,75 @@ function ServicesPage({ navigate }) {
         </button>
         <span style={{ fontSize: 13, fontWeight: 500, color: previewDiscount ? C.taupeDark : C.charcoalSoft }}>{previewDiscount ? "Showing 20% off" : "Regular prices"}</span>
       </div>
+
+      {/* HOME CONCIERGE */}
+      {activeTab === "concierge" && (
+        <div>
+          <div className="gc-card" style={{ padding: 28, marginBottom: 24, textAlign: "center" }}>
+            <h2 className="gc-serif" style={{ fontSize: 24, marginBottom: 6 }}>Premium Home Concierge Services</h2>
+            <p style={{ fontSize: 15, color: C.taupeDark, fontWeight: 600, marginBottom: 14 }}>Your Home, Managed Your Way.</p>
+            <p style={{ fontSize: 14, color: C.charcoalSoft, lineHeight: 1.7, maxWidth: 560, margin: "0 auto 14px" }}>
+              Life gets busy. Let Grace &amp; Co. take care of the details so you can spend more time enjoying your home and less time managing it.
+            </p>
+            <p style={{ fontSize: 14, color: C.charcoalSoft, lineHeight: 1.7, maxWidth: 560, margin: "0 auto 18px" }}>
+              Our Premium Home Concierge Service is designed for busy professionals, growing families, new parents, and anyone looking for personalized household support beyond traditional cleaning. Every service plan is customized to your family's unique routine and lifestyle.
+            </p>
+            <div className="gc-serif" style={{ fontSize: 20, color: C.taupeDark, fontWeight: 600 }}>Starting at $50/hour</div>
+            <p style={{ fontSize: 12.5, color: C.charcoalSoft, marginTop: 4 }}>Time is estimated based on the services you select during your consultation; final scope and hours are confirmed together.</p>
+          </div>
+
+          <div className="gc-card" style={{ padding: 22, marginBottom: 24, background: C.creamDeep, border: "none" }}>
+            <h3 className="gc-serif" style={{ fontSize: 16, marginBottom: 8 }}>Complimentary In-Home Consultation</h3>
+            <p style={{ fontSize: 13.5, color: C.charcoalSoft, lineHeight: 1.65, margin: 0 }}>
+              Every family is different. We begin with a free in-home consultation to understand your household routines, priorities, and goals. Together, we'll create a personalized concierge plan that fits your schedule and lifestyle.
+            </p>
+          </div>
+
+          <h3 className="gc-serif" style={{ fontSize: 18, textAlign: "center", marginBottom: 4 }}>Concierge Services</h3>
+          <p style={{ textAlign: "center", color: C.charcoalSoft, fontSize: 13.5, marginBottom: 20 }}>Select all that apply — you're not limited to one.</p>
+
+          <div className="gc-grid-2" style={{ marginBottom: 20 }}>
+            {CONCIERGE_CATEGORIES.map((cat) => (
+              <div key={cat.id} className="gc-card" style={{ padding: 20 }}>
+                <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 12, color: C.taupeDark }}>{cat.label}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {cat.items.map((it) => (
+                    <div key={it.id} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
+                      <Check size={14} color={C.sage} style={{ marginTop: 2, flexShrink: 0 }} /> {it.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="gc-card" style={{ padding: 20, marginBottom: 24 }}>
+            <h3 className="gc-serif" style={{ fontSize: 15.5, marginBottom: 6 }}>Customized Concierge Services</h3>
+            <p style={{ fontSize: 13.5, color: C.charcoalSoft, margin: 0 }}>Have something else in mind? During your consultation, we'll create a personalized plan tailored to your household's needs.</p>
+          </div>
+
+          <div className="gc-card" style={{ padding: 20, marginBottom: 24 }}>
+            <h3 className="gc-serif" style={{ fontSize: 15.5, marginBottom: 10 }}>Designed For</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {["Busy professionals","Working parents","New parents","Families with demanding schedules","Homeowners looking for ongoing household support"].map((item) => (
+                <div key={item} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
+                  <Check size={14} color={C.sage} style={{ marginTop: 2, flexShrink: 0 }} /> {item}
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginTop: 14, marginBottom: 0, lineHeight: 1.6 }}>This is more than a cleaning service — it's personalized household management designed to help your home run smoothly.</p>
+          </div>
+
+          <div style={{ padding: "14px 18px", borderRadius: 12, background: C.blush, marginBottom: 24, fontSize: 13.5, color: C.charcoal, lineHeight: 1.65 }}>
+            <strong>Limited Availability</strong> — To ensure every client receives exceptional, personalized service, we are currently accepting a limited number of concierge families. All Concierge services are subject to a signed service agreement.
+          </div>
+
+          <div style={{ textAlign: "center" }}>
+            <p className="gc-serif" style={{ fontSize: 18, marginBottom: 14 }}>Ready to simplify your life?</p>
+            <button onClick={() => navigate("book", "concierge")} className="gc-btn gc-btn-primary">Book your complimentary consultation <ArrowRight size={16} /></button>
+          </div>
+        </div>
+      )}
 
       {/* BASIC CLEANING */}
       {activeTab === "basic" && (
@@ -909,6 +978,57 @@ const SPECIALTY_LIST = [
   { id: "kitchen-bath", label: "Kitchen & Bathroom Deep Clean", priceLabel: "Custom quote" },
   { id: "customized", label: "Customized Plan for Your Home", priceLabel: "Custom quote" },
 ];
+const CONCIERGE_CATEGORIES = [
+  {
+    id: "home-reset",
+    label: "Home Reset",
+    items: [
+      { id: "reset-kitchen", label: "Kitchen reset and tidy" },
+      { id: "reset-laundry", label: "Laundry (wash, fold & put away)" },
+      { id: "reset-tidy", label: "Light household tidying" },
+      { id: "reset-beds", label: "Bed making" },
+      { id: "reset-nextday", label: "Preparing your home for the next day" },
+    ],
+  },
+  {
+    id: "kitchen-meal",
+    label: "Kitchen & Meal Planning",
+    items: [
+      { id: "meal-planning", label: "Weekly meal planning" },
+      { id: "meal-grocerylist", label: "Grocery list creation" },
+      { id: "meal-groceryorder", label: "Online grocery ordering (client pays)" },
+      { id: "meal-pantryfridge", label: "Pantry and refrigerator organization" },
+      { id: "meal-washprep", label: "Wash and prepare fruits and vegetables" },
+      { id: "meal-ingredientprep", label: "Ingredient preparation for meals" },
+      { id: "meal-lunchprep", label: "Lunch preparation (client-provided food)" },
+    ],
+  },
+  {
+    id: "household-org",
+    label: "Household Organization",
+    items: [
+      { id: "org-pantry", label: "Pantry organization" },
+      { id: "org-closet", label: "Closet organization" },
+      { id: "org-linen", label: "Linen closet organization" },
+      { id: "org-playroom", label: "Toy and playroom organization" },
+      { id: "org-seasonal", label: "Seasonal organization" },
+      { id: "org-declutter", label: "Decluttering and organization projects" },
+    ],
+  },
+  {
+    id: "household-mgmt",
+    label: "Household Management",
+    items: [
+      { id: "mgmt-calendar", label: "Family calendar organization" },
+      { id: "mgmt-inventory", label: "Household inventory tracking" },
+      { id: "mgmt-restock", label: "Restocking reminders for household essentials" },
+      { id: "mgmt-packages", label: "Package and delivery organization" },
+      { id: "mgmt-vacation", label: "Vacation preparation" },
+      { id: "mgmt-guest", label: "Guest preparation" },
+      { id: "mgmt-airbnb", label: "Airbnb turnover support" },
+    ],
+  },
+];
 const RECURRING_OPTIONS = [
   { id: "one-time", label: "One-time visit", discount: 0 },
   { id: "weekly", label: "Weekly", discount: 0.15, note: "15% off every clean" },
@@ -919,6 +1039,7 @@ const PROPERTY_TYPES = ["Apartment / Condo", "Detached Home", "Townhouse", "Semi
 const TIME_WINDOWS = ["Morning (8:00 AM – 12:00 PM)", "Afternoon (12:00 PM – 4:00 PM)", "Evening (4:00 PM – 8:00 PM)", "Flexible"];
 
 function calcDeposit(category, price) {
+  if (category === "concierge") return 0;
   if (category === "moveinout" && price != null && price > 500) return Math.round(price * 0.25);
   return 100;
 }
@@ -935,7 +1056,7 @@ function calcPriceBreakdown(category, tierId, recurringId, newClient) {
   return { base, newClientDiscount, recurringDiscount, final: afterNew - recurringDiscount };
 }
 
-function BookPage({ bookings, addBooking, navigate }) {
+function BookPage({ bookings, addBooking, navigate, initialCategory }) {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null);
@@ -943,20 +1064,23 @@ function BookPage({ bookings, addBooking, navigate }) {
     name: "", email: "", phone: "", address: "", city: "", postalCode: "",
     propertyType: "", otherPropertyType: "", sqFootage: "", bedrooms: "", bathrooms: "", finishedBasement: false,
     recurring: "one-time",
-    serviceCategory: "basic",
+    serviceCategory: initialCategory || "basic",
     basicTierId: "small", deepTierId: "family-deep", moveinoutTierId: "family-mio", moveType: "movein",
     specialtyServices: [],
+    conciergeServices: [],
     date: "", timeWindow: TIME_WINDOWS[0],
     someoneHome: null, entryInstructions: "", areasAttention: "", notes: "",
     agreeDeposit: false, agreeTerms: false,
   });
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const toggleSpecialty = (id) => setForm(f => ({ ...f, specialtyServices: f.specialtyServices.includes(id) ? f.specialtyServices.filter(s => s !== id) : [...f.specialtyServices, id] }));
+  const toggleConcierge = (id) => setForm(f => ({ ...f, conciergeServices: f.conciergeServices.includes(id) ? f.conciergeServices.filter(s => s !== id) : [...f.conciergeServices, id] }));
   const newClient = useMemo(() => !isReturningCustomer(bookings, form.email, form.phone), [bookings, form.email, form.phone]);
   const activeTierId = form.serviceCategory === "basic" ? form.basicTierId : form.serviceCategory === "deep" ? form.deepTierId : form.serviceCategory === "moveinout" ? form.moveinoutTierId : null;
   const priceCalc = useMemo(() => calcPriceBreakdown(form.serviceCategory, activeTierId, form.recurring, newClient), [form.serviceCategory, activeTierId, form.recurring, newClient]);
   const deposit = calcDeposit(form.serviceCategory, priceCalc.final);
   const serviceLabel = useMemo(() => {
+    if (form.serviceCategory === "concierge") return "Home Concierge Consultation";
     if (form.serviceCategory === "basic") return `Basic Cleaning — ${SIZE_TIERS.find(t => t.id === form.basicTierId)?.label || ""}`;
     if (form.serviceCategory === "deep") return `Deep Cleaning — ${DEEP_TIERS.find(t => t.id === form.deepTierId)?.label || ""}`;
     if (form.serviceCategory === "moveinout") return `${form.moveType === "movein" ? "Move-In" : "Move-Out"} Cleaning — ${MOVEINOUT_TIERS.find(t => t.id === form.moveinoutTierId)?.label || ""}`;
@@ -980,13 +1104,13 @@ function BookPage({ bookings, addBooking, navigate }) {
       basePrice: priceCalc.base,
       discount: (priceCalc.newClientDiscount || 0) + (priceCalc.recurringDiscount || 0),
       finalPrice: priceCalc.final,
-      depositAmount: priceCalc.final != null ? deposit : 100,
+      depositAmount: deposit,
       isNewCustomer: newClient, recurring: form.recurring,
       propertyType: form.propertyType, sqFootage: form.sqFootage, bedrooms: form.bedrooms, bathrooms: form.bathrooms, finishedBasement: form.finishedBasement,
       date: form.date, time: form.timeWindow,
       someoneHome: form.someoneHome, entryInstructions: form.entryInstructions.trim(),
       areasAttention: form.areasAttention.trim(), notes: form.notes.trim(),
-      specialtyServices: form.specialtyServices, moveType: form.moveType,
+      specialtyServices: form.specialtyServices, conciergeServices: form.conciergeServices, moveType: form.moveType,
       status: "pending_confirmation", paymentStatus: "unpaid", cancellationFee: 0,
     };
     await addBooking(booking);
@@ -1001,16 +1125,24 @@ function BookPage({ bookings, addBooking, navigate }) {
           <CheckCircle2 size={30} color={C.coral} />
         </div>
         <h1 className="gc-serif" style={{ fontSize: 28, textAlign: "center", marginBottom: 6 }}>Request received!</h1>
-        <p style={{ textAlign: "center", color: C.charcoalSoft, marginBottom: 28 }}>We'll review your request and reach out within 24 hours to confirm your appointment and send deposit instructions.</p>
+        <p style={{ textAlign: "center", color: C.charcoalSoft, marginBottom: 28 }}>
+          {done.serviceCategory === "concierge"
+            ? "We'll review your request and reach out within 24 hours to schedule your complimentary in-home consultation."
+            : "We'll review your request and reach out within 24 hours to confirm your appointment and send deposit instructions."}
+        </p>
         <div className="gc-card" style={{ padding: 22, marginBottom: 20 }}>
           <Row label="Service" value={done.serviceLabel} />
           <Row label="Requested date" value={`${formatDateLabel(done.date)} — ${done.time}`} />
           <Row label="Address" value={done.address} />
           {done.finalPrice != null && <Row label="Estimated price" value={money(done.finalPrice)} />}
-          <Row label="Deposit required" value={money(done.depositAmount || 100)} highlight />
+          <Row label="Deposit required" value={done.serviceCategory === "concierge" ? "No deposit — free consultation" : money(done.depositAmount ?? 100)} highlight />
         </div>
         <div className="gc-card" style={{ padding: 18, marginBottom: 24, background: C.creamDeep, border: "none" }}>
-          <p style={{ fontSize: 14, margin: 0, color: C.charcoalSoft }}>📩 We'll send deposit instructions to <strong>{done.email}</strong> once your appointment is confirmed. No payment is required until then.</p>
+          <p style={{ fontSize: 14, margin: 0, color: C.charcoalSoft }}>
+            {done.serviceCategory === "concierge"
+              ? <>📩 We'll be in touch at <strong>{done.email}</strong> to schedule your complimentary consultation. No payment is required.</>
+              : <>📩 We'll send deposit instructions to <strong>{done.email}</strong> once your appointment is confirmed. No payment is required until then.</>}
+          </p>
         </div>
         <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
           <button onClick={() => navigate("home")} className="gc-btn gc-btn-outline">Back to Home</button>
@@ -1085,7 +1217,7 @@ function BookPage({ bookings, addBooking, navigate }) {
           <h2 className="gc-serif" style={{ fontSize: 19, marginBottom: 16 }}>What service do you need?</h2>
           {newClient && <div style={{ marginBottom: 16 }}><NewClientBanner compact /></div>}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-            {[["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty Services"]].map(([id,icon,label]) => (
+            {[["concierge","🛎️","Home Concierge"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty Services"]].map(([id,icon,label]) => (
               <button key={id} onClick={() => set("serviceCategory", id)} style={{ padding: 14, borderRadius: 12, border: `1.5px solid ${form.serviceCategory === id ? C.taupe : C.line}`, background: form.serviceCategory === id ? C.creamDeep : C.white, fontFamily: "Jost", fontSize: 14, fontWeight: 600, cursor: "pointer", color: form.serviceCategory === id ? C.taupeDark : C.charcoal, textAlign: "center" }}>
                 <div style={{ fontSize: 22, marginBottom: 4 }}>{icon}</div>{label}
               </button>
@@ -1133,6 +1265,31 @@ function BookPage({ bookings, addBooking, navigate }) {
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+
+          {form.serviceCategory === "concierge" && (
+            <div>
+              <div style={{ padding: "12px 16px", borderRadius: 12, background: C.creamDeep, fontSize: 13, color: C.charcoalSoft, marginBottom: 18, lineHeight: 1.6 }}>
+                This is a <strong>complimentary consultation</strong>, not a paid booking. Select anything that interests you below — we'll confirm scope and pricing together during your free in-home visit. Starting at $50/hour.
+              </div>
+              <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply — you're not limited to one.</p>
+              {CONCIERGE_CATEGORIES.map(cat => (
+                <div key={cat.id} style={{ marginBottom: 18 }}>
+                  <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 8, color: C.taupeDark }}>{cat.label}</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {cat.items.map(it => (
+                      <label key={it.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10, border: `1.5px solid ${form.conciergeServices.includes(it.id) ? C.taupe : C.line}`, background: form.conciergeServices.includes(it.id) ? C.creamDeep : C.white, cursor: "pointer" }}>
+                        <input type="checkbox" checked={form.conciergeServices.includes(it.id)} onChange={() => toggleConcierge(it.id)} />
+                        <span style={{ fontSize: 13.5, fontWeight: 500 }}>{it.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <p style={{ fontSize: 12.5, color: C.charcoalSoft, marginTop: 4, lineHeight: 1.6 }}>
+                Don't see what you need? Describe it in the notes on the next step — we'll cover it during your consultation.
+              </p>
             </div>
           )}
 
@@ -1194,7 +1351,9 @@ function BookPage({ bookings, addBooking, navigate }) {
           <Row label="Service" value={serviceLabel} />
           <Row label="Frequency" value={RECURRING_OPTIONS.find(r => r.id === form.recurring)?.label || "One-time"} />
           <Row label="Date" value={`${formatDateLabel(form.date)} — ${form.timeWindow}`} />
-          {priceCalc.final != null ? (
+          {form.serviceCategory === "concierge" ? (
+            <Row label="Price" value="Complimentary consultation — no charge" highlight />
+          ) : priceCalc.final != null ? (
             <>
               {priceCalc.newClientDiscount > 0 && <Row label="New client discount (20%)" value={`−${money(priceCalc.newClientDiscount)}`} />}
               {priceCalc.recurringDiscount > 0 && <Row label="Recurring discount" value={`−${money(priceCalc.recurringDiscount)}`} />}
@@ -1205,23 +1364,34 @@ function BookPage({ bookings, addBooking, navigate }) {
             <Row label="Price" value="Custom quote — we'll follow up" highlight />
           )}
           <div style={{ marginTop: 18, padding: "14px 16px", borderRadius: 12, background: C.creamDeep, fontSize: 13, color: C.charcoalSoft, lineHeight: 1.6 }}>
-            <strong style={{ color: C.charcoal, display: "block", marginBottom: 6 }}>Booking Deposit & Cancellation Policy</strong>
-            A deposit of <strong>{priceCalc.final != null ? money(deposit) : "$100"}</strong> is required to secure your appointment and will be applied toward your final invoice. Send by e-transfer to <strong>{CONTACT.email}</strong> after we confirm.
-            <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>
-              <li><strong>48+ hours notice:</strong> Full refund or free reschedule</li>
-              <li><strong>24–48 hours notice:</strong> Deposit non-refundable but applies to one reschedule within 30 days</li>
-              <li><strong>Less than 24 hours / no-show:</strong> Deposit forfeited</li>
-            </ul>
+            {form.serviceCategory === "concierge" ? (
+              <>
+                <strong style={{ color: C.charcoal, display: "block", marginBottom: 6 }}>Complimentary Consultation</strong>
+                This is a free, no-obligation in-home consultation — no deposit or payment is required to book. We'll confirm your personalized concierge plan and pricing together before any work begins.
+              </>
+            ) : (
+              <>
+                <strong style={{ color: C.charcoal, display: "block", marginBottom: 6 }}>Booking Deposit & Cancellation Policy</strong>
+                A deposit of <strong>{priceCalc.final != null ? money(deposit) : "$100"}</strong> is required to secure your appointment and will be applied toward your final invoice. Send by e-transfer to <strong>{CONTACT.email}</strong> after we confirm.
+                <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>
+                  <li><strong>48+ hours notice:</strong> Full refund or free reschedule</li>
+                  <li><strong>24–48 hours notice:</strong> Deposit non-refundable but applies to one reschedule within 30 days</li>
+                  <li><strong>Less than 24 hours / no-show:</strong> Deposit forfeited</li>
+                </ul>
+              </>
+            )}
           </div>
           <label style={{ display: "flex", gap: 10, alignItems: "flex-start", marginTop: 14, fontSize: 13.5, color: C.charcoalSoft, cursor: "pointer" }}>
             <input type="checkbox" checked={form.agreeDeposit} onChange={e => set("agreeDeposit", e.target.checked)} style={{ marginTop: 2 }} />
-            I understand and agree to the deposit and cancellation policy above.
+            {form.serviceCategory === "concierge"
+              ? "I understand this is a complimentary consultation and no deposit is required today."
+              : "I understand and agree to the deposit and cancellation policy above."}
           </label>
           <label style={{ display: "flex", gap: 10, alignItems: "flex-start", marginTop: 10, fontSize: 13.5, color: C.charcoalSoft, cursor: "pointer" }}>
             <input type="checkbox" checked={form.agreeTerms} onChange={e => set("agreeTerms", e.target.checked)} style={{ marginTop: 2 }} />
             I confirm the information provided is accurate and agree to Grace & Co.'s terms of service.
           </label>
-          <NavButtons onBack={() => setStep(4)} onNext={handleConfirm} nextDisabled={!form.agreeDeposit || !form.agreeTerms || submitting} nextLabel={submitting ? <><Loader2 size={15} className="gc-spin" /> Submitting...</> : "Submit Booking Request"} />
+          <NavButtons onBack={() => setStep(4)} onNext={handleConfirm} nextDisabled={!form.agreeDeposit || !form.agreeTerms || submitting} nextLabel={submitting ? <><Loader2 size={15} className="gc-spin" /> Submitting...</> : (form.serviceCategory === "concierge" ? "Request Consultation" : "Submit Booking Request")} />
         </div>
       )}
     </div>
@@ -1885,6 +2055,7 @@ export default function App() {
   const [bookings, setBookings] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [bookCategory, setBookCategory] = useState("basic");
 
   useEffect(() => {
     (async () => {
@@ -1909,7 +2080,12 @@ export default function App() {
     setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
   }, []);
 
-  const navigate = (p) => { setPage(p); setMenuOpen(false); window.scrollTo(0, 0); };
+  const navigate = (p, category) => {
+    setPage(p);
+    if (p === "book") setBookCategory(category || "basic");
+    setMenuOpen(false);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className="gc-root">
@@ -1928,7 +2104,7 @@ export default function App() {
           {page === "contact" && <ContactPage navigate={navigate} />}
           {page === "legal" && <LegalPage />}
           {page === "areas" && <ServiceAreasPage navigate={navigate} />}
-          {page === "book" && <BookPage bookings={bookings} addBooking={addBooking} navigate={navigate} />}
+          {page === "book" && <BookPage bookings={bookings} addBooking={addBooking} navigate={navigate} initialCategory={bookCategory} />}
           {page === "manage" && <ManagePage bookings={bookings} updateBooking={updateBooking} />}
           {page === "admin" && <AdminPage bookings={bookings} refreshBookings={refreshBookings} updateBooking={updateBooking} />}
         </>
