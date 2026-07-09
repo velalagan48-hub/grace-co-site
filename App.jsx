@@ -552,6 +552,7 @@ function HomePage({ navigate }) {
         <h2 className="gc-serif" style={{ fontSize: 30, marginBottom: 36 }}>Our Services</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 18, marginBottom: 28 }}>
           {[
+            { emoji: "🛎️", title: "Home Concierge", desc: "Personalized household support beyond cleaning — meal planning, organization, errands, and more. Starting at $50/hour.", id: "concierge" },
             { emoji: "🏠", title: "Basic Cleaning", desc: "Regular home cleaning covering all essential areas. Available for all home sizes.", id: "basic" },
             { emoji: "✨", title: "Deep Cleaning", desc: "A more detailed clean including baseboards, light switches, door handles, trims, and thorough bathroom and kitchen scrubbing.", id: "deep" },
             { emoji: "🚚", title: "Move-In / Move-Out", desc: "Complete top-to-bottom clean for incoming or outgoing tenants. Starting at $300.", id: "moveinout" },
