@@ -1238,7 +1238,7 @@ if (form.serviceCategory === "concierge") return "Home Concierge Consultation";
               <p style={{ fontSize: 13, color: C.charcoalSoft, fontStyle: "italic" }}>Have something else in mind? Let us know in the notes below — we'll cover it during your consultation.</p>
             </div>
           )}
-          {form.serviceCategory === "specialty" && (
+    
             <div>
               <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply — we'll follow up with a custom quote.</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
