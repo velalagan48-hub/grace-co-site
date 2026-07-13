@@ -329,18 +329,18 @@ function encodeFormData(data) {
 }
 
 // Sends the booking to Netlify Forms, which triggers Netlify's email
-// notification to you. This requires a matching hidden static form named
-// "booking-notification" to exist somewhere Netlify's build bot can see it
-// (see the snippet added to index.html). If this fails, the booking is
-// still saved in Supabase — it just won't email you, so we swallow errors
-// here instead of blocking the customer's confirmation.
+// notification to you. This must match the hidden static form in index.html
+// exactly (name="booking-request" and these field names) or Netlify will
+// silently drop the submission. If this fails, the booking is still saved
+// in Supabase — it just won't email you, so we swallow errors here instead
+// of blocking the customer's confirmation.
 async function notifyNewBooking(booking) {
   try {
     await fetch("/", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: encodeFormData({
-        "form-name": "booking-notification",
+        "form-name": "booking-request",
         name: booking.name,
         email: booking.email,
         phone: booking.phone,
@@ -350,8 +350,7 @@ async function notifyNewBooking(booking) {
         time: booking.time,
         price: booking.finalPrice ?? "",
         deposit: booking.depositAmount ?? "",
-        new_customer: booking.isNewCustomer ? "Yes" : "No",
-        details: booking.notes || "",
+        notes: booking.notes || "",
       }),
     });
   } catch (e) {
