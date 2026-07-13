@@ -43,7 +43,7 @@ const C = {
 
 /* ============================== BUSINESS CONFIG ============================== */
 // Edit these once you have things set up on your end.
-const ADMIN_PIN = "2026"; // change this to whatever PIN you want for the reports dashboard
+const ADMIN_PIN = "340320"; // change this to whatever PIN you want for the reports dashboard
 const NEW_CLIENT_DISCOUNT = 0.20;
 const CANCELLATION_FEE = 50;
 const CANCELLATION_WINDOW_HOURS = 24;
@@ -320,6 +320,43 @@ function downloadCSV(filename, rows) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+function encodeFormData(data) {
+  return Object.keys(data)
+    .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key] ?? ""))
+    .join("&");
+}
+
+// Sends the booking to Netlify Forms, which triggers Netlify's email
+// notification to you. This requires a matching hidden static form named
+// "booking-notification" to exist somewhere Netlify's build bot can see it
+// (see the snippet added to index.html). If this fails, the booking is
+// still saved in Supabase — it just won't email you, so we swallow errors
+// here instead of blocking the customer's confirmation.
+async function notifyNewBooking(booking) {
+  try {
+    await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: encodeFormData({
+        "form-name": "booking-notification",
+        name: booking.name,
+        email: booking.email,
+        phone: booking.phone,
+        address: booking.address,
+        service: booking.serviceLabel,
+        date: booking.date,
+        time: booking.time,
+        price: booking.finalPrice ?? "",
+        deposit: booking.depositAmount ?? "",
+        new_customer: booking.isNewCustomer ? "Yes" : "No",
+        details: booking.notes || "",
+      }),
+    });
+  } catch (e) {
+    console.error("notifyNewBooking error (booking was still saved):", e);
+  }
 }
 
 /* ============================== GLOBAL STYLE ============================== */
@@ -1096,6 +1133,27 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
 
   async function handleConfirm() {
     setSubmitting(true);
+
+    // Bundle every detail from the form into one readable notes block.
+    // This is stored in the existing "notes" column so nothing gets lost,
+    // and it will show up in the dashboard + CSV export without needing
+    // any new columns added to Supabase.
+    const specialtyLabels = SPECIALTY_LIST.filter(s => form.specialtyServices.includes(s.id)).map(s => s.label);
+    const conciergeLabels = form.conciergeServices; // already labels/ids selected in Home Concierge step
+    const detailLines = [
+      `Property type: ${form.propertyType === "other" ? form.otherPropertyType : form.propertyType || "—"}`,
+      `Sq footage: ${form.sqFootage || "—"} | Bedrooms: ${form.bedrooms || "—"} | Bathrooms: ${form.bathrooms || "—"} | Finished basement: ${form.finishedBasement ? "Yes" : "No"}`,
+      `Recurring: ${form.recurring}`,
+      form.serviceCategory === "moveinout" ? `Move type: ${form.moveType}` : null,
+      specialtyLabels.length ? `Specialty services: ${specialtyLabels.join(", ")}` : null,
+      conciergeLabels.length ? `Concierge services: ${conciergeLabels.join(", ")}` : null,
+      `Someone home during clean: ${form.someoneHome === null ? "—" : form.someoneHome ? "Yes" : "No"}`,
+      `Entry instructions: ${form.entryInstructions.trim() || "—"}`,
+      `Areas needing attention: ${form.areasAttention.trim() || "—"}`,
+      `Deposit required: ${deposit != null ? `$${deposit}` : "—"}`,
+      form.notes.trim() ? `Additional notes from client: ${form.notes.trim()}` : null,
+    ].filter(Boolean).join("\n");
+
     const booking = {
       id: uid(), createdAt: new Date().toISOString(),
       name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim(),
@@ -1110,11 +1168,12 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
       propertyType: form.propertyType, sqFootage: form.sqFootage, bedrooms: form.bedrooms, bathrooms: form.bathrooms, finishedBasement: form.finishedBasement,
       date: form.date, time: form.timeWindow,
       someoneHome: form.someoneHome, entryInstructions: form.entryInstructions.trim(),
-      areasAttention: form.areasAttention.trim(), notes: form.notes.trim(),
+      areasAttention: form.areasAttention.trim(), notes: detailLines,
       specialtyServices: form.specialtyServices, conciergeServices: form.conciergeServices, moveType: form.moveType,
       status: "pending_confirmation", paymentStatus: "unpaid", cancellationFee: 0,
     };
     await addBooking(booking);
+    await notifyNewBooking(booking); // sends the email notification via Netlify Forms
     setSubmitting(false);
     setDone(booking);
   }
@@ -1598,8 +1657,8 @@ function AdminPage({ bookings, refreshBookings, updateBooking }) {
   }
 
   function exportBookingsCSV() {
-    const rows = [["Name", "Email", "Phone", "Address", "Service", "Date", "Time", "Price", "New Client", "Status", "Cancellation Fee"]];
-    bookings.forEach((b) => rows.push([b.name, b.email, b.phone, b.address, b.serviceLabel, b.date, b.time, b.finalPrice ?? "", b.isNewCustomer ? "Yes" : "No", b.status, b.cancellationFee || 0]));
+    const rows = [["Name", "Email", "Phone", "Address", "Service", "Date", "Time", "Price", "Deposit", "New Client", "Status", "Payment Status", "Cancellation Fee", "Notes / Details"]];
+    bookings.forEach((b) => rows.push([b.name, b.email, b.phone, b.address, b.serviceLabel, b.date, b.time, b.finalPrice ?? "", b.depositAmount ?? "", b.isNewCustomer ? "Yes" : "No", b.status, b.paymentStatus || "", b.cancellationFee || 0, b.notes || ""]));
     downloadCSV("grace-co-bookings.csv", rows);
   }
   function exportCustomersCSV() {
