@@ -82,22 +82,18 @@ const SIZE_TIERS = [
   { id: "custom", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null, Icon: Sparkles },
 ];
 
-const ADD_ON_SERVICES = [
-  { id: "deep", label: "Deep Cleaning", Icon: Sparkles, priceLabel: "Add $100–$150 to any basic clean" },
-  { id: "home-org", label: "Home Organization", Icon: Package, priceLabel: null },
-  { id: "basement", label: "Basement & Storage Organization", Icon: Box, priceLabel: null },
-  { id: "closet", label: "Closet Organization", Icon: Shirt, priceLabel: null },
-  { id: "playroom", label: "Playroom & Toy Organization", Icon: Smile, priceLabel: null },
-  { id: "declutter", label: "Decluttering & Home Reset", Icon: HomeIcon, priceLabel: "Starting at $100" },
-  { id: "kitchen-bath", label: "Kitchen & Bathroom Cleaning", Icon: Bath, priceLabel: null },
-  { id: "regular", label: "Regular Home Cleaning", Icon: RefreshCw, priceLabel: null },
-  { id: "movein", label: "Move-In / Move-Out Cleaning", Icon: Truck, priceLabel: "Starting at $300" },
-  { id: "customized", label: "Customized Plans for Your Home", Icon: ClipboardList, priceLabel: null },
-];
-
 const BASIC_INCLUDES = [
   "Kitchen cleaning", "Bathroom cleaning", "Dusting", "Vacuuming",
-  "Mopping", "Surface wipe downs", "Garbage removal", "Bed making (upon request)",
+  "Mopping", "Surface wipe-downs", "Garbage removal",
+];
+const DEEP_INCLUDES = [
+  "Detailed shower & bathroom tile scrubbing", "Bathroom baseboards & trim", "Bathroom doors & door handles",
+  "Bathroom light switches", "Kitchen cabinet exterior degreasing", "Detailed stove cleaning",
+  "Hood fan cleaning", "Countertop stain removal", "Inside microwave cleaning",
+];
+const MOVEINOUT_INCLUDES = [
+  "Baseboards & trim throughout the home", "Doors & door handles throughout the home", "Light switches throughout the home",
+  "Inside cabinets & drawers", "Inside closets & shelving",
 ];
 
 const TIME_SLOTS = ["8:00 AM","9:00 AM","10:00 AM","11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
@@ -120,10 +116,10 @@ const FAQ_ITEMS = [
   {cat:"Our Services",q:"What does a move-in or move-out clean include?",a:"Move-in and move-out cleans are our most thorough service. They include baseboards, doors, door knobs, and light switches throughout the entire home, plus inside cabinets and closets. Interior appliance cleaning (fridge, stove, microwave) is available as an add-on and is not included in the base price. We can often accommodate within 48 hours — contact us to check availability."},
   {cat:"Our Services",q:"Do you clean apartments and condos?",a:"Yes! We clean all residential property types including condos, apartments, townhouses, semi-detached, and detached homes throughout the GTA."},
   {cat:"Our Services",q:"Do you offer home organization services?",a:"Yes. We offer home organization, closet organization, basement and storage organization, playroom and toy organization, and decluttering and home reset. These are custom-quoted after a quick consultation."},
-  {cat:"Our Services",q:"Can I add extras to my basic clean?",a:"Absolutely. You can add specialty services when booking or by contacting us. Common add-ons include fridge, oven, and microwave cleaning, window cleaning, blind cleaning, balcony cleaning, and more."},
+  {cat:"Our Services",q:"Can I add extras to my basic clean?",a:"Absolutely. You can add extras when booking or by contacting us. Common add-ons include fridge, oven, and microwave cleaning, window cleaning, blind cleaning, balcony cleaning, professional carpet cleaning, and more."},
   {cat:"Our Services",q:"Do you clean finished basements?",a:"Yes. Finished basements can be added to any package. Just check the box on the booking form or mention it when you contact us."},
   {cat:"Our Services",q:"Do you offer a satisfaction guarantee?",a:"Yes. If you are not happy with any part of your clean, contact us within 24 hours and we will make it right at no extra charge."},
-  {cat:"Pricing",q:"How is pricing structured?",a:"Basic cleaning starts at $200 for condos and goes up to $450 for extra-large homes. Deep cleaning starts at $300 for condos and goes up to $550 for extra-large homes. Move-in and move-out cleans start at $300 for condos and go up to $650 for extra-large homes. Specialty services are quoted individually."},
+  {cat:"Pricing",q:"How is pricing structured?",a:"Basic cleaning starts at $200 for condos and goes up to $450 for extra-large homes. Deep cleaning starts at $300 for condos and goes up to $550 for extra-large homes. Move-in and move-out cleans start at $300 for condos and go up to $650 for extra-large homes. Organization, Moving, and Event Support are quoted individually after your request."},
   {cat:"Pricing",q:"Is there a new client discount?",a:"Yes! New clients receive 20% off their first basic cleaning. It is applied automatically when you book and shown in your booking summary before you confirm."},
   {cat:"Pricing",q:"Are there discounts for recurring bookings?",a:"Yes. Weekly clients save 15%, bi-weekly clients save 10%, and monthly clients save 5% on every clean."},
   {cat:"Pricing",q:"Do you charge extra for homes with pets?",a:"We do not charge a mandatory pet fee, but heavy pet hair or dander may require extra time. Please mention any pets in your booking notes."},
@@ -620,13 +616,15 @@ function HomePage({ navigate }) {
             { emoji: "🏠", title: "Basic Cleaning", desc: "Regular home cleaning covering all essential areas. Available for all home sizes.", id: "basic" },
             { emoji: "✨", title: "Deep Cleaning", desc: "Detailed scrubbing of bathrooms and kitchens, including baseboards, doors, trims, cabinet degreasing, and appliance detailing.", id: "deep" },
             { emoji: "🚚", title: "Move-In / Move-Out", desc: "Complete top-to-bottom clean for incoming or outgoing tenants. Starting at $300.", id: "moveinout" },
-            { emoji: "📦", title: "Specialty & Add-Ons", desc: "Home organization, closet organizing, decluttering, interior appliances, and more.", id: "specialty" },
+            { emoji: "🧺", title: "Organization", desc: "Decluttering, closet organization, whole-home resets, and more — quoted after your request.", id: "organization" },
+            { emoji: "📦", title: "Moving", desc: "Full-service moving help, from a single room to a whole home. Get a free quote.", id: "moving" },
+            { emoji: "🎉", title: "Event Support", desc: "Extra hands for setup, serving, and cleanup at your next event.", id: "event-support" },
           ].map((s) => (
             <div key={s.id} className="gc-card" style={{ padding: 22, textAlign: "left" }}>
               <div style={{ fontSize: 32, marginBottom: 10 }}>{s.emoji}</div>
               <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 6 }}>{s.title}</div>
               <div style={{ fontSize: 13.5, color: C.charcoalSoft, lineHeight: 1.6, marginBottom: 14 }}>{s.desc}</div>
-              <button onClick={() => navigate("services", s.id)} style={{ background: "none", border: "none", cursor: "pointer", color: C.taupeDark, fontWeight: 600, fontSize: 13.5, fontFamily: "Jost", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+              <button onClick={() => (s.id === "organization" || s.id === "moving" || s.id === "event-support") ? navigate(s.id) : navigate("services", s.id)} style={{ background: "none", border: "none", cursor: "pointer", color: C.taupeDark, fontWeight: 600, fontSize: 13.5, fontFamily: "Jost", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
                 Learn more <ArrowRight size={13} />
               </button>
             </div>
@@ -792,11 +790,14 @@ function ServicesPage({ navigate, initialTab }) {
 
       {/* Service category tabs */}
       <div style={{ display: "flex", gap: 10, marginBottom: 32, flexWrap: "wrap", justifyContent: "center" }}>
-        {[["concierge","🛎️","Household Assistant"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty"]].map(([id,icon,label]) => (
-          <button key={id} onClick={() => setActiveTab(id)} style={{ padding: "10px 20px", borderRadius: 999, border: `1.5px solid ${activeTab === id ? C.taupe : C.line}`, background: activeTab === id ? C.taupe : C.white, fontFamily: "Jost", fontWeight: 600, fontSize: 14, cursor: "pointer", color: activeTab === id ? C.white : C.charcoal }}>
-            {icon} {label}
-          </button>
-        ))}
+        {[["concierge","🛎️","Household Assistant"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["organization","🧺","Organization"],["moving","📦","Moving"],["event-support","🎉","Event Support"]].map(([id,icon,label]) => {
+          const isExternal = id === "organization" || id === "moving" || id === "event-support";
+          return (
+            <button key={id} onClick={() => isExternal ? navigate(id) : setActiveTab(id)} style={{ padding: "10px 20px", borderRadius: 999, border: `1.5px solid ${activeTab === id ? C.taupe : C.line}`, background: activeTab === id ? C.taupe : C.white, fontFamily: "Jost", fontWeight: 600, fontSize: 14, cursor: "pointer", color: activeTab === id ? C.white : C.charcoal }}>
+              {icon} {label}
+            </button>
+          );
+        })}
       </div>
 
       {/* New client discount toggle */}
@@ -915,8 +916,16 @@ function ServicesPage({ navigate, initialTab }) {
       {/* DEEP CLEANING */}
       {activeTab === "deep" && (
         <div>
-          <div style={{ padding: "14px 18px", borderRadius: 12, background: C.creamDeep, marginBottom: 20, fontSize: 14, color: C.charcoalSoft, lineHeight: 1.65 }}>
-            Deep cleaning covers detailed scrubbing of shower and bathroom tiles, plus doors, door handles, and light switches in the bathroom. It includes thorough scrubbing of bathrooms and kitchens, baseboards, doors, and trims in both the bathrooms and kitchen, degreasing cabinets and the stove, cleaning hood fans, removing stains from countertops, and cleaning inside the microwave.
+          <div className="gc-card" style={{ padding: 22, marginBottom: 20 }}>
+            <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 4 }}>Every Deep Clean Includes</h3>
+            <p style={{ fontSize: 12.5, color: C.charcoalSoft, marginBottom: 12 }}>Everything in a Basic Clean, plus:</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {DEEP_INCLUDES.map((b) => (
+                <div key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
+                  <Check size={14} color={C.sage} style={{ marginTop: 2, flexShrink: 0 }} /> {b}
+                </div>
+              ))}
+            </div>
           </div>
           <div className="gc-grid-3" style={{ marginBottom: 16 }}>
             {[
@@ -941,8 +950,17 @@ function ServicesPage({ navigate, initialTab }) {
       {/* MOVE-IN / MOVE-OUT */}
       {activeTab === "moveinout" && (
         <div>
-          <div style={{ padding: "14px 18px", borderRadius: 12, background: C.creamDeep, marginBottom: 20, fontSize: 14, color: C.charcoalSoft, lineHeight: 1.65 }}>
-            Our most thorough service — designed to leave a property spotless for incoming or outgoing tenants. Includes baseboards, doors, door knobs, and light switches throughout the entire home, plus inside cabinets and closets. Interior appliance cleaning (fridge, stove, microwave) is available as an add-on and is not included in the base price.
+          <div className="gc-card" style={{ padding: 22, marginBottom: 20 }}>
+            <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 4 }}>Every Move-In / Move-Out Clean Includes</h3>
+            <p style={{ fontSize: 12.5, color: C.charcoalSoft, marginBottom: 12 }}>Everything in a Deep Clean, plus:</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {MOVEINOUT_INCLUDES.map((b) => (
+                <div key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
+                  <Check size={14} color={C.sage} style={{ marginTop: 2, flexShrink: 0 }} /> {b}
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 12.5, color: C.charcoalSoft, marginTop: 12 }}>Interior appliance cleaning (fridge, stove, microwave) is available as an add-on and is not included in the base price.</p>
           </div>
           <div className="gc-grid-3" style={{ marginBottom: 16 }}>
             {[
@@ -963,48 +981,6 @@ function ServicesPage({ navigate, initialTab }) {
           </div>
         </div>
       )}
-
-      {/* SPECIALTY */}
-      {activeTab === "specialty" && (
-        <div>
-          <p style={{ textAlign: "center", color: C.charcoalSoft, fontSize: 14.5, marginBottom: 24 }}>All specialty services are custom-quoted after a quick consultation based on your space and needs.</p>
-          <div className="gc-grid-3" style={{ marginBottom: 16 }}>
-            {ADD_ON_SERVICES.map((s) => (
-              <div key={s.id} className="gc-card" style={{ padding: 20 }}>
-                <div style={{ width: 40, height: 40, borderRadius: "50%", background: C.creamDeep, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                  <s.Icon size={18} color={C.taupeDark} />
-                </div>
-                <div style={{ fontWeight: 600, fontSize: 14.5, marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: 12.5, color: s.priceLabel ? C.taupeDark : C.charcoalSoft, fontWeight: s.priceLabel ? 600 : 400 }}>{s.priceLabel || "Custom quote"}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* WHAT'S NOT INCLUDED */}
-      <div className="gc-grid-2" style={{ marginTop: 40, alignItems: "start" }}>
-        <div className="gc-card" style={{ padding: 22 }}>
-          <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 12 }}>What's Included in Every Clean</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {["All rooms cleaned thoroughly","Kitchen surfaces and appliance exteriors","Bathroom cleaning and sanitizing","Dusting surfaces and fixtures","Vacuuming all floors and rugs","Mopping hard floors","Garbage removal"].map((item) => (
-              <div key={item} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5 }}>
-                <Check size={14} color={C.sage} style={{ flexShrink: 0 }} /> {item}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="gc-card" style={{ padding: 22 }}>
-          <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 12 }}>What's Not Included</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {["Exterior windows (interior available as add-on)","Biohazard or hazardous material cleanup","Carpet shampooing or steam cleaning","Pest or rodent cleanup","Heavy furniture moving","Exterior of the home or garage","Hoarding or extreme clutter cleanup (contact us)"].map((item) => (
-              <div key={item} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
-                <X size={14} color={C.coral} style={{ flexShrink: 0, marginTop: 2 }} /> {item}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       <div style={{ textAlign: "center", marginTop: 36 }}>
         <button onClick={() => navigate("book", activeTab)} className="gc-btn gc-btn-primary">Book Now <ArrowRight size={16} /></button>
@@ -1039,15 +1015,6 @@ const MOVEINOUT_CHECKLIST = [
   "Inside cabinets & closets", "Inside fridge", "Inside stove/oven", "Inside microwave",
   "Baseboards throughout", "Doors, door knobs & light switches throughout",
   "Interior windows", "Wall marks/scuffs", "Garage", "Balcony",
-];
-const SPECIALTY_LIST = [
-  { id: "home-org", label: "Home Organization", priceLabel: "Custom quote" },
-  { id: "basement", label: "Basement & Storage Organization", priceLabel: "Custom quote" },
-  { id: "closet", label: "Closet Organization", priceLabel: "Custom quote" },
-  { id: "playroom", label: "Playroom & Toy Organization", priceLabel: "Custom quote" },
-  { id: "declutter", label: "Decluttering & Home Reset", priceLabel: "Starting at $100" },
-  { id: "kitchen-bath", label: "Kitchen & Bathroom Deep Clean", priceLabel: "Custom quote" },
-  { id: "customized", label: "Customized Plan for Your Home", priceLabel: "Custom quote" },
 ];
 const CONCIERGE_CATEGORIES = [
   {
@@ -1137,7 +1104,6 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
     recurring: "one-time",
     serviceCategory: initialCategory || "basic",
     basicTierId: "small", deepTierId: "family-deep", moveinoutTierId: "family-mio", moveType: "movein",
-    specialtyServices: [],
     addOns: [],
     moveinoutServices: [],
     conciergeServices: [],
@@ -1146,7 +1112,6 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
     agreeDeposit: false, agreeTerms: false,
   });
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
-  const toggleSpecialty = (id) => setForm(f => ({ ...f, specialtyServices: f.specialtyServices.includes(id) ? f.specialtyServices.filter(s => s !== id) : [...f.specialtyServices, id] }));
   const toggleAddOn = (id) => setForm(f => ({ ...f, addOns: f.addOns.includes(id) ? f.addOns.filter(s => s !== id) : [...f.addOns, id] }));
   const toggleMoveinoutService = (id) => setForm(f => ({ ...f, moveinoutServices: f.moveinoutServices.includes(id) ? f.moveinoutServices.filter(s => s !== id) : [...f.moveinoutServices, id] }));
   const toggleConcierge = (id) => setForm(f => ({ ...f, conciergeServices: f.conciergeServices.includes(id) ? f.conciergeServices.filter(s => s !== id) : [...f.conciergeServices, id] }));
@@ -1159,13 +1124,12 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
     if (form.serviceCategory === "basic") return `Basic Cleaning — ${SIZE_TIERS.find(t => t.id === form.basicTierId)?.label || ""}`;
     if (form.serviceCategory === "deep") return `Deep Cleaning — ${DEEP_TIERS.find(t => t.id === form.deepTierId)?.label || ""}`;
     if (form.serviceCategory === "moveinout") return `${form.moveType === "movein" ? "Move-In" : "Move-Out"} Cleaning — ${MOVEINOUT_TIERS.find(t => t.id === form.moveinoutTierId)?.label || ""}`;
-    const sel = SPECIALTY_LIST.filter(s => form.specialtyServices.includes(s.id)).map(s => s.label);
-    return sel.length > 0 ? `Specialty: ${sel.join(", ")}` : "Specialty Services";
-  }, [form.serviceCategory, form.basicTierId, form.deepTierId, form.moveinoutTierId, form.moveType, form.specialtyServices]);
+    return "";
+  }, [form.serviceCategory, form.basicTierId, form.deepTierId, form.moveinoutTierId, form.moveType]);
 
   const canNext1 = form.name.trim() && form.email.trim() && form.phone.trim() && form.address.trim() && form.city.trim();
   const canNext2 = form.propertyType !== "";
-  const canNext3 = form.serviceCategory !== "specialty" || form.specialtyServices.length > 0;
+  const canNext3 = true;
   const canNext4 = form.date.trim() !== "";
 
   async function handleConfirm() {
@@ -1175,7 +1139,6 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
     // This is stored in the existing "notes" column so nothing gets lost,
     // and it will show up in the dashboard + CSV export without needing
     // any new columns added to Supabase.
-    const specialtyLabels = SPECIALTY_LIST.filter(s => form.specialtyServices.includes(s.id)).map(s => s.label);
     const conciergeLabels = form.conciergeServices; // already labels/ids selected in Household Assistant step
     const detailLines = [
       `Property type: ${form.propertyType === "other" ? form.otherPropertyType : form.propertyType || "—"}`,
@@ -1184,7 +1147,6 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
       form.serviceCategory === "moveinout" ? `Move type: ${form.moveType}` : null,
       (form.serviceCategory === "basic" || form.serviceCategory === "deep") && form.addOns.length ? `Add-ons requested: ${form.addOns.join(", ")}` : null,
       form.serviceCategory === "moveinout" && form.moveinoutServices.length ? `Services needed: ${form.moveinoutServices.join(", ")}` : null,
-      specialtyLabels.length ? `Specialty services: ${specialtyLabels.join(", ")}` : null,
       conciergeLabels.length ? `Concierge services: ${conciergeLabels.join(", ")}` : null,
       `Someone home during clean: ${form.someoneHome === null ? "—" : form.someoneHome ? "Yes" : "No"}`,
       `Entry instructions: ${form.entryInstructions.trim() || "—"}`,
@@ -1208,7 +1170,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
       date: form.date, time: form.timeWindow,
       someoneHome: form.someoneHome, entryInstructions: form.entryInstructions.trim(),
       areasAttention: form.areasAttention.trim(), notes: detailLines,
-      specialtyServices: form.specialtyServices, conciergeServices: form.conciergeServices, moveType: form.moveType,
+      conciergeServices: form.conciergeServices, moveType: form.moveType,
       addOns: form.addOns, moveinoutServices: form.moveinoutServices,
       status: "pending_confirmation", paymentStatus: "unpaid", cancellationFee: 0,
     };
@@ -1317,7 +1279,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
           <h2 className="gc-serif" style={{ fontSize: 19, marginBottom: 16 }}>What service do you need?</h2>
           {newClient && <div style={{ marginBottom: 16 }}><NewClientBanner compact /></div>}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-            {[["concierge","🛎️","Household Assistant"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["specialty","📦","Specialty Services"]].map(([id,icon,label]) => (
+            {[["concierge","🛎️","Household Assistant"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"]].map(([id,icon,label]) => (
               <button key={id} onClick={() => set("serviceCategory", id)} style={{ padding: 14, borderRadius: 12, border: `1.5px solid ${form.serviceCategory === id ? C.taupe : C.line}`, background: form.serviceCategory === id ? C.creamDeep : C.white, fontFamily: "Jost", fontSize: 14, fontWeight: 600, cursor: "pointer", color: form.serviceCategory === id ? C.taupeDark : C.charcoal, textAlign: "center" }}>
                 <div style={{ fontSize: 22, marginBottom: 4 }}>{icon}</div>{label}
               </button>
@@ -1429,22 +1391,6 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
             </div>
           )}
 
-          {form.serviceCategory === "specialty" && (
-            <div>
-              <p style={{ fontSize: 13.5, color: C.charcoalSoft, marginBottom: 14 }}>Select all that apply — we'll follow up with a custom quote.</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {SPECIALTY_LIST.map(s => (
-                  <label key={s.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${form.specialtyServices.includes(s.id) ? C.taupe : C.line}`, background: form.specialtyServices.includes(s.id) ? C.creamDeep : C.white, cursor: "pointer" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <input type="checkbox" checked={form.specialtyServices.includes(s.id)} onChange={() => toggleSpecialty(s.id)} />
-                      <span style={{ fontSize: 14, fontWeight: 500 }}>{s.label}</span>
-                    </div>
-                    <span style={{ fontSize: 12.5, color: C.taupeDark, fontWeight: 600 }}>{s.priceLabel}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
           <NavButtons onBack={() => setStep(2)} onNext={() => setStep(4)} nextDisabled={!canNext3} />
         </div>
       )}
@@ -1533,7 +1479,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
             <input type="checkbox" checked={form.agreeTerms} onChange={e => set("agreeTerms", e.target.checked)} style={{ marginTop: 2 }} />
             I confirm the information provided is accurate and agree to Grace & Co.'s terms of service.
           </label>
-          <NavButtons onBack={() => setStep(4)} onNext={handleConfirm} nextDisabled={!form.agreeDeposit || !form.agreeTerms || submitting} nextLabel={submitting ? <><Loader2 size={15} className="gc-spin" /> Submitting...</> : (form.serviceCategory === "concierge" ? "Submit Inquiry" : "Submit Booking Request")} />
+          <NavButtons onBack={() => setStep(4)} onNext={handleConfirm} nextDisabled={!form.agreeDeposit || !form.agreeTerms || submitting} nextLabel={submitting ? <><Loader2 size={15} className="gc-spin" /> Submitting...</> : (form.serviceCategory === "concierge" ? "Submit Inquiry" : "Get a Free Estimate")} />
         </div>
       )}
     </div>
