@@ -4,7 +4,7 @@ import {
   Truck, ClipboardList, Building2, Calendar, Clock, Phone, Mail, MapPin,
   Instagram, Facebook, ChevronRight, ChevronDown, Check, X, Menu, ArrowRight,
   Loader2, Lock, Users, DollarSign, TrendingUp, Download, Search,
-  CheckCircle2, AlertCircle, Heart, CalendarCheck, CalendarX, LogOut
+  CheckCircle2, AlertCircle, Heart, CalendarCheck, CalendarX, LogOut, PartyPopper
 } from "lucide-react";
 
 /* ============================== BRAND ASSETS ============================== */
@@ -412,14 +412,22 @@ function GlobalStyle() {
       @keyframes gcSparkle { 0%,100% { opacity: 0.45; transform: scale(0.92) rotate(0deg);} 50% { opacity: 1; transform: scale(1.08) rotate(8deg);} }
       .gc-grid-2 { display: grid; grid-template-columns: 1fr; gap: 28px; }
       .gc-grid-3 { display: grid; grid-template-columns: 1fr; gap: 18px; }
-      .gc-grid-services { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+      .gc-grid-services { display: grid; grid-template-columns: 1fr; gap: 14px; }
       .gc-grid-gallery { display: grid; grid-template-columns: 1fr; gap: 12px; }
+      @media (min-width: 600px) {
+        .gc-grid-services { grid-template-columns: repeat(2,1fr); }
+      }
       @media (min-width: 720px) {
         .gc-grid-2 { grid-template-columns: 1fr 1fr; align-items: center; }
         .gc-grid-3 { grid-template-columns: repeat(3,1fr); }
-        .gc-grid-services { grid-template-columns: repeat(5,1fr); }
         .gc-grid-gallery { grid-template-columns: repeat(3,1fr); }
       }
+      @media (min-width: 960px) {
+        .gc-grid-services { grid-template-columns: repeat(4,1fr); }
+      }
+      .gc-service-card { display: block; text-align: left; background: ${C.white}; border: 1px solid ${C.line}; border-radius: 16px; padding: 20px 20px 18px; cursor: pointer; text-decoration: none; color: inherit; transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease; min-height: 160px; max-height: 200px; display: flex; flex-direction: column; }
+      .gc-service-card:hover, .gc-service-card:focus-visible { transform: translateY(-3px); box-shadow: 0 12px 28px -14px rgba(43,36,32,0.28); border-color: ${C.taupe}; outline: none; }
+      .gc-service-card:focus-visible { box-shadow: 0 0 0 3px rgba(168,133,99,0.28), 0 12px 28px -14px rgba(43,36,32,0.28); }
       table.gc-table { width: 100%; border-collapse: collapse; font-size: 14px; }
       table.gc-table th { text-align: left; font-weight: 500; color: ${C.charcoalSoft}; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 12px; border-bottom: 1.5px solid ${C.line}; white-space: nowrap; }
       table.gc-table td { padding: 12px 12px; border-bottom: 1px solid ${C.line}; vertical-align: top; }
@@ -610,28 +618,32 @@ function HomePage({ navigate }) {
       <section className="gc-container" style={{ padding: "64px 22px 10px", textAlign: "center" }}>
         <SectionEyebrow>What we offer</SectionEyebrow>
         <h2 className="gc-serif" style={{ fontSize: 30, marginBottom: 36 }}>Our Services</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 18, marginBottom: 28 }}>
+        <div className="gc-grid-services" style={{ marginBottom: 28, textAlign: "left" }}>
           {[
-            { emoji: "🛎️", title: "Household Assistant", desc: "Ongoing personalized household support beyond cleaning — meal planning, organization, errands, and more. Starting at $40/hour, one family at a time.", id: "concierge" },
-            { emoji: "🏠", title: "Basic Cleaning", desc: "Regular home cleaning covering all essential areas. Available for all home sizes.", id: "basic" },
-            { emoji: "✨", title: "Deep Cleaning", desc: "Detailed scrubbing of bathrooms and kitchens, including baseboards, doors, trims, cabinet degreasing, and appliance detailing.", id: "deep" },
-            { emoji: "🚚", title: "Move-In / Move-Out", desc: "Complete top-to-bottom clean for incoming or outgoing tenants. Starting at $300.", id: "moveinout" },
-            { emoji: "🧺", title: "Organization", desc: "Decluttering, closet organization, whole-home resets, and more — quoted after your request.", id: "organization" },
-            { emoji: "📦", title: "Moving", desc: "Full-service moving help, from a single room to a whole home. Get a free quote.", id: "moving" },
-            { emoji: "🎉", title: "Event Support", desc: "Extra hands for setup, serving, and cleanup at your next event.", id: "event-support" },
+            { Icon: Sparkles, title: "Home Cleaning", desc: "Basic, Deep & Move-In/Move-Out", cta: "View Cleaning", onClick: () => navigate("services", "basic") },
+            { Icon: Package, title: "Home Organization", desc: "Decluttering & organization support", cta: "View Organization", onClick: () => navigate("organization") },
+            { Icon: Truck, title: "Moving Services", desc: "Moving team + truck options", cta: "View Moving", onClick: () => navigate("moving") },
+            { Icon: PartyPopper, title: "Event Support", desc: "Extra hands before, during or after your event", cta: "View Event Support", onClick: () => navigate("event-support") },
           ].map((s) => (
-            <div key={s.id} className="gc-card" style={{ padding: 22, textAlign: "left" }}>
-              <div style={{ fontSize: 32, marginBottom: 10 }}>{s.emoji}</div>
-              <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 6 }}>{s.title}</div>
-              <div style={{ fontSize: 13.5, color: C.charcoalSoft, lineHeight: 1.6, marginBottom: 14 }}>{s.desc}</div>
-              <button onClick={() => (s.id === "organization" || s.id === "moving" || s.id === "event-support") ? navigate(s.id) : navigate("services", s.id)} style={{ background: "none", border: "none", cursor: "pointer", color: C.taupeDark, fontWeight: 600, fontSize: 13.5, fontFamily: "Jost", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
-                Learn more <ArrowRight size={13} />
-              </button>
-            </div>
+            <button
+              key={s.title}
+              onClick={s.onClick}
+              className="gc-service-card"
+              aria-label={s.cta}
+            >
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: C.creamDeep, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12, flexShrink: 0 }}>
+                <s.Icon size={18} color={C.taupeDark} />
+              </div>
+              <div style={{ fontWeight: 600, fontSize: 15.5, marginBottom: 4, color: C.charcoal }}>{s.title}</div>
+              <div style={{ fontSize: 13, color: C.charcoalSoft, lineHeight: 1.5, marginBottom: 12, flexGrow: 1 }}>{s.desc}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.taupeDark, display: "flex", alignItems: "center", gap: 4 }}>
+                {s.cta} <ArrowRight size={13} />
+              </div>
+            </button>
           ))}
         </div>
         <div style={{ padding: "14px 20px", borderRadius: 12, background: C.creamDeep, fontSize: 13.5, color: C.charcoalSoft, display: "inline-block" }}>
-          ✨ <strong>Add-ons available:</strong> Interior fridge · Oven · Microwave · Windows · Blinds · Balcony · Laundry room · Wall spot cleaning
+          ✨ <strong>Add-ons available:</strong> Interior fridge · Oven · Microwave · Windows · Blinds · Balcony · Laundry room · Wall spot cleaning · Carpet cleaning
         </div>
       </section>
 
