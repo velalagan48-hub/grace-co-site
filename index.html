@@ -9,7 +9,7 @@
   <body>
     <div id="root"></div>
 
-    <!-- Hidden static form so Netlify detects it at build time. Do not remove. -->
+    <!-- Hidden static forms so Netlify detects them at build time. Do not remove. -->
     <form name="booking-request" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
       <input type="text" name="bot-field" style="display:none" />
       <input type="text" name="name" />
@@ -24,6 +24,17 @@
       <textarea name="notes"></textarea>
     </form>
 
-    <script type="module" src="/main.jsx"></script>
-  </body>
-</html>
+    <form name="organization-request" data-netlify="true" hidden>
+      <input name="name" /><input name="phone" /><input name="email" /><input name="address" />
+      <input name="preferredDate" /><input name="altDate" /><input name="datesFlexible" />
+      <input name="homeType" /><input name="sqft" /><input name="bedrooms" /><input name="bathrooms" />
+      <input name="occupied" /><input name="needsHelpWith" /><input name="areas" /><input name="condition" />
+      <input name="unwantedItems" /><input name="workStyle" /><input name="addonServices" />
+      <input name="goals" /><input name="doNotTouch" /><input name="budget" />
+    </form>
+
+    <form name="moving-quote-request" data-netlify="true" hidden>
+      <input name="name" /><input name="phone" /><input name="email" />
+      <input name="preferredDate" /><input name="altDate" /><input name="datesFlexible" />
+      <input name="pickupAddress" /><input name="pickupHomeType" /><input name="pickupSqft" /><input name="pickupBedrooms" />
+      <input name="pickupBasement"
