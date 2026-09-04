@@ -74,17 +74,17 @@ const CONTACT = {
 };
 
 const SIZE_TIERS = [
-  { id: "condo", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 250, Icon: Building2 },
+  { id: "condo", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 200, Icon: Building2 },
   { id: "small", label: "Small Home", sub: "1,000 – 1,500 sq ft", price: 300, Icon: HomeIcon },
   { id: "family", label: "Family Home", sub: "1,500 – 2,000 sq ft", price: 350, Icon: HomeIcon },
-  { id: "large", label: "Large Home", sub: "2,000 – 2,500 sq ft", price: 450, Icon: HomeIcon },
-  { id: "xl", label: "Extra Large Home", sub: "2,500 – 3,000 sq ft", price: 550, Icon: HomeIcon },
+  { id: "large", label: "Large Home", sub: "2,000 – 2,500 sq ft", price: 400, Icon: HomeIcon },
+  { id: "xl", label: "Extra Large Home", sub: "2,500 – 3,000 sq ft", price: 450, Icon: HomeIcon },
   { id: "custom", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null, Icon: Sparkles },
 ];
 
 const ADD_ON_SERVICES = [
   { id: "deep", label: "Deep Cleaning", Icon: Sparkles, priceLabel: "Add $100–$150 to any basic clean" },
-  { id: "home-org", label: "Home Organization", Icon: Package, priceLabel: "Starting at $100" },
+  { id: "home-org", label: "Home Organization", Icon: Package, priceLabel: null },
   { id: "basement", label: "Basement & Storage Organization", Icon: Box, priceLabel: null },
   { id: "closet", label: "Closet Organization", Icon: Shirt, priceLabel: null },
   { id: "playroom", label: "Playroom & Toy Organization", Icon: Smile, priceLabel: null },
@@ -117,13 +117,13 @@ const FAQ_ITEMS = [
   {cat:"Booking & Scheduling",q:"Can I reschedule my appointment?",a:"Yes. Please notify us at least 48 hours before your appointment to reschedule at no cost. Within 24 to 48 hours, your deposit can be applied to one reschedule within 30 days."},
   {cat:"Booking & Scheduling",q:"What happens after I submit my booking form?",a:"We review your request and reach out within 24 hours to confirm your appointment and send deposit instructions by e-transfer."},
   {cat:"Our Services",q:"What is the difference between basic and deep cleaning?",a:"A basic clean covers all essential areas: kitchen, bathrooms, dusting, vacuuming, mopping, and surface wipe-downs. A deep clean goes further with detailed scrubbing of shower and bathroom tiles, bathroom doors, door handles, and light switches, baseboards, doors, and trims in both bathrooms and kitchen, degreasing cabinets and the stove, cleaning hood fans, removing countertop stains, and cleaning inside the microwave."},
-  {cat:"Our Services",q:"What does a move-in or move-out clean include?",a:"Move-in and move-out cleans are our most thorough service. They include baseboards, doors, door knobs, and light switches throughout the entire home, inside cabinets and closets, and inside appliances such as the fridge, stove, and microwave. We can often accommodate within 48 hours — contact us to check availability."},
+  {cat:"Our Services",q:"What does a move-in or move-out clean include?",a:"Move-in and move-out cleans are our most thorough service. They include baseboards, doors, door knobs, and light switches throughout the entire home, plus inside cabinets and closets. Interior appliance cleaning (fridge, stove, microwave) is available as an add-on and is not included in the base price. We can often accommodate within 48 hours — contact us to check availability."},
   {cat:"Our Services",q:"Do you clean apartments and condos?",a:"Yes! We clean all residential property types including condos, apartments, townhouses, semi-detached, and detached homes throughout the GTA."},
   {cat:"Our Services",q:"Do you offer home organization services?",a:"Yes. We offer home organization, closet organization, basement and storage organization, playroom and toy organization, and decluttering and home reset. These are custom-quoted after a quick consultation."},
   {cat:"Our Services",q:"Can I add extras to my basic clean?",a:"Absolutely. You can add specialty services when booking or by contacting us. Common add-ons include fridge, oven, and microwave cleaning, window cleaning, blind cleaning, balcony cleaning, and more."},
   {cat:"Our Services",q:"Do you clean finished basements?",a:"Yes. Finished basements can be added to any package. Just check the box on the booking form or mention it when you contact us."},
   {cat:"Our Services",q:"Do you offer a satisfaction guarantee?",a:"Yes. If you are not happy with any part of your clean, contact us within 24 hours and we will make it right at no extra charge."},
-  {cat:"Pricing",q:"How is pricing structured?",a:"Basic cleaning starts at $250 for condos and goes up to $550 for extra-large homes. Deep cleaning adds $100 to $150 on top. Move-in and move-out cleans start at $300. Specialty services are quoted individually."},
+  {cat:"Pricing",q:"How is pricing structured?",a:"Basic cleaning starts at $200 for condos and goes up to $450 for extra-large homes. Deep cleaning starts at $300 for condos and goes up to $550 for extra-large homes. Move-in and move-out cleans start at $300 for condos and go up to $650 for extra-large homes. Specialty services are quoted individually."},
   {cat:"Pricing",q:"Is there a new client discount?",a:"Yes! New clients receive 20% off their first basic cleaning. It is applied automatically when you book and shown in your booking summary before you confirm."},
   {cat:"Pricing",q:"Are there discounts for recurring bookings?",a:"Yes. Weekly clients save 15%, bi-weekly clients save 10%, and monthly clients save 5% on every clean."},
   {cat:"Pricing",q:"Do you charge extra for homes with pets?",a:"We do not charge a mandatory pet fee, but heavy pet hair or dander may require extra time. Please mention any pets in your booking notes."},
@@ -363,6 +363,24 @@ async function notifyNewBooking(booking) {
   }
 }
 
+// Generic Netlify Forms notifier for the intake-style forms below (Organization,
+// Moving Quote, Event Support, Contact Us). Each one needs its own hidden static
+// form in index.html with a matching name="..." and matching field names, or
+// Netlify will silently drop the submission.
+async function notifyFormSubmission(formName, data) {
+  try {
+    await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: encodeFormData({ "form-name": formName, ...data }),
+    });
+    return true;
+  } catch (e) {
+    console.error(`notifyFormSubmission (${formName}) error:`, e);
+    return false;
+  }
+}
+
 /* ============================== GLOBAL STYLE ============================== */
 function GlobalStyle() {
   return (
@@ -576,9 +594,14 @@ function HomePage({ navigate }) {
             <p style={{ fontSize: 16.5, lineHeight: 1.7, color: "rgba(255,255,255,0.88)", maxWidth: 460, marginBottom: 28 }}>
               Professional cleaning and organization for a home that feels calm, beautiful, and functional — serving families across the Greater Toronto Area.
             </p>
-            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 26 }}>
+            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
               <button onClick={() => navigate("book")} className="gc-btn" style={{ background: C.white, color: C.charcoal }}>Book Your Cleaning <ArrowRight size={16} /></button>
-              <button onClick={() => navigate("services")} className="gc-btn gc-btn-outline-light">See Pricing</button>
+              <button onClick={() => navigate("organization")} className="gc-btn gc-btn-outline-light">Book Your Organization <ArrowRight size={16} /></button>
+              <button onClick={() => navigate("event-support")} className="gc-btn gc-btn-outline-light">Book Your Event Support <ArrowRight size={16} /></button>
+              <button onClick={() => navigate("moving")} className="gc-btn gc-btn-outline-light">Book Your Moving <ArrowRight size={16} /></button>
+            </div>
+            <div style={{ marginBottom: 26 }}>
+              <button onClick={() => navigate("services")} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.85)", fontFamily: "Jost", fontSize: 13.5, textDecoration: "underline", padding: 0 }}>See Pricing</button>
             </div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 9, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 999, padding: "8px 16px", fontSize: 13.5 }}>
               <Sparkles size={15} className="gc-sparkle" /> New clients get 20% off their first cleaning
@@ -854,6 +877,16 @@ function ServicesPage({ navigate, initialTab }) {
       {/* BASIC CLEANING */}
       {activeTab === "basic" && (
         <div>
+          <div className="gc-card" style={{ padding: 22, marginBottom: 20 }}>
+            <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 12 }}>Every Basic Clean Includes</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {BASIC_INCLUDES.map((b) => (
+                <div key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
+                  <Check size={14} color={C.sage} style={{ marginTop: 2, flexShrink: 0 }} /> {b}
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="gc-grid-3" style={{ marginBottom: 28 }}>
             {SIZE_TIERS.map((tier) => {
               const p = priceFor(tier, previewDiscount);
@@ -876,16 +909,6 @@ function ServicesPage({ navigate, initialTab }) {
               );
             })}
           </div>
-          <div className="gc-card" style={{ padding: 22, marginBottom: 16 }}>
-            <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 12 }}>Every Basic Clean Includes</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              {BASIC_INCLUDES.map((b) => (
-                <div key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5 }}>
-                  <Check size={14} color={C.sage} style={{ marginTop: 2, flexShrink: 0 }} /> {b}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
 
@@ -897,11 +920,11 @@ function ServicesPage({ navigate, initialTab }) {
           </div>
           <div className="gc-grid-3" style={{ marginBottom: 16 }}>
             {[
-              {id:"condo-d",label:"Condo / Apartment",sub:"Up to 1,000 sq ft",price:350},
-              {id:"small-d",label:"Small Home",sub:"1,000–1,500 sq ft",price:400},
-              {id:"family-d",label:"Family Home",sub:"1,500–2,000 sq ft",price:475},
-              {id:"large-d",label:"Large Home",sub:"2,000–2,500 sq ft",price:575},
-              {id:"xl-d",label:"Extra Large Home",sub:"2,500–3,000 sq ft",price:700},
+              {id:"condo-d",label:"Condo / Apartment",sub:"Up to 1,000 sq ft",price:300},
+              {id:"small-d",label:"Small Home",sub:"1,000–1,500 sq ft",price:350},
+              {id:"family-d",label:"Family Home",sub:"1,500–2,000 sq ft",price:400},
+              {id:"large-d",label:"Large Home",sub:"2,000–2,500 sq ft",price:450},
+              {id:"xl-d",label:"Extra Large Home",sub:"2,500–3,000 sq ft",price:550},
               {id:"custom-d",label:"Larger Home",sub:"3,000+ sq ft",price:null},
             ].map((t) => (
               <div key={t.id} className="gc-card" style={{ padding: 22 }}>
@@ -919,7 +942,7 @@ function ServicesPage({ navigate, initialTab }) {
       {activeTab === "moveinout" && (
         <div>
           <div style={{ padding: "14px 18px", borderRadius: 12, background: C.creamDeep, marginBottom: 20, fontSize: 14, color: C.charcoalSoft, lineHeight: 1.65 }}>
-            Our most thorough service — designed to leave a property spotless for incoming or outgoing tenants. Includes baseboards, doors, door knobs, and light switches throughout the entire home, inside cabinets and closets, and inside appliances such as the fridge, stove, and microwave.
+            Our most thorough service — designed to leave a property spotless for incoming or outgoing tenants. Includes baseboards, doors, door knobs, and light switches throughout the entire home, plus inside cabinets and closets. Interior appliance cleaning (fridge, stove, microwave) is available as an add-on and is not included in the base price.
           </div>
           <div className="gc-grid-3" style={{ marginBottom: 16 }}>
             {[
@@ -927,7 +950,7 @@ function ServicesPage({ navigate, initialTab }) {
               {id:"small-m",label:"Small Home",sub:"1,000–1,500 sq ft",price:400},
               {id:"family-m",label:"Family Home",sub:"1,500–2,000 sq ft",price:450},
               {id:"large-m",label:"Large Home",sub:"2,000–2,500 sq ft",price:550},
-              {id:"xl-m",label:"Extra Large Home",sub:"2,500–3,000 sq ft",price:700},
+              {id:"xl-m",label:"Extra Large Home",sub:"2,500–3,000 sq ft",price:650},
               {id:"custom-m",label:"Larger Home",sub:"3,000+ sq ft",price:null},
             ].map((t) => (
               <div key={t.id} className="gc-card" style={{ padding: 22 }}>
@@ -993,11 +1016,11 @@ function ServicesPage({ navigate, initialTab }) {
 /* ============================== BOOK PAGE ============================== */
 
 const DEEP_TIERS = [
-  { id: "condo-deep", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 350 },
-  { id: "small-deep", label: "Small Home", sub: "1,000–1,500 sq ft", price: 400 },
-  { id: "family-deep", label: "Family Home", sub: "1,500–2,000 sq ft", price: 475 },
-  { id: "large-deep", label: "Large Home", sub: "2,000–2,500 sq ft", price: 575 },
-  { id: "xl-deep", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 700 },
+  { id: "condo-deep", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 300 },
+  { id: "small-deep", label: "Small Home", sub: "1,000–1,500 sq ft", price: 350 },
+  { id: "family-deep", label: "Family Home", sub: "1,500–2,000 sq ft", price: 400 },
+  { id: "large-deep", label: "Large Home", sub: "2,000–2,500 sq ft", price: 450 },
+  { id: "xl-deep", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 550 },
   { id: "custom-deep", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null },
 ];
 const MOVEINOUT_TIERS = [
@@ -1005,12 +1028,12 @@ const MOVEINOUT_TIERS = [
   { id: "small-mio", label: "Small Home", sub: "1,000–1,500 sq ft", price: 400 },
   { id: "family-mio", label: "Family Home", sub: "1,500–2,000 sq ft", price: 450 },
   { id: "large-mio", label: "Large Home", sub: "2,000–2,500 sq ft", price: 550 },
-  { id: "xl-mio", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 700 },
+  { id: "xl-mio", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 650 },
   { id: "custom-mio", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null },
 ];
 const CLEANING_ADDONS = [
   "Interior fridge", "Interior oven", "Interior microwave", "Interior windows",
-  "Blinds", "Balcony", "Laundry room", "Wall spot cleaning", "Bed making",
+  "Blinds", "Balcony", "Laundry room", "Wall spot cleaning", "Bed making", "Professional carpet cleaning",
 ];
 const MOVEINOUT_CHECKLIST = [
   "Inside cabinets & closets", "Inside fridge", "Inside stove/oven", "Inside microwave",
@@ -1018,7 +1041,7 @@ const MOVEINOUT_CHECKLIST = [
   "Interior windows", "Wall marks/scuffs", "Garage", "Balcony",
 ];
 const SPECIALTY_LIST = [
-  { id: "home-org", label: "Home Organization", priceLabel: "Starting at $100" },
+  { id: "home-org", label: "Home Organization", priceLabel: "Custom quote" },
   { id: "basement", label: "Basement & Storage Organization", priceLabel: "Custom quote" },
   { id: "closet", label: "Closet Organization", priceLabel: "Custom quote" },
   { id: "playroom", label: "Playroom & Toy Organization", priceLabel: "Custom quote" },
@@ -1998,14 +2021,440 @@ function FAQPage() {
   );
 }
 
+/* ============================== SHARED INTAKE FORM HELPERS ============================== */
+function FieldLabel({ children, required }) {
+  return <label className="gc-label">{children}{required ? " *" : ""}</label>;
+}
+function TextField({ label, required, value, onChange, placeholder, type = "text" }) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <FieldLabel required={required}>{label}</FieldLabel>
+      <input className="gc-input" type={type} value={value} placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+function TextAreaField({ label, required, value, onChange, placeholder }) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <FieldLabel required={required}>{label}</FieldLabel>
+      <textarea className="gc-input" rows={4} value={value} placeholder={placeholder}
+        style={{ resize: "vertical", fontFamily: "Jost" }}
+        onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+function CheckboxGroup({ label, required, options, selected, onToggle }) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      {label && <FieldLabel required={required}>{label}</FieldLabel>}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {options.map((o) => (
+          <label key={o} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 12px", borderRadius: 999, border: `1.5px solid ${selected.includes(o) ? C.taupe : C.line}`, background: selected.includes(o) ? C.creamDeep : C.white, cursor: "pointer" }}>
+            <input type="checkbox" checked={selected.includes(o)} onChange={() => onToggle(o)} />
+            <span style={{ fontSize: 13 }}>{o}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+function RadioGroup({ label, required, options, value, onChange }) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      {label && <FieldLabel required={required}>{label}</FieldLabel>}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {options.map((o) => (
+          <button key={o} type="button" onClick={() => onChange(o)} style={{ padding: "8px 14px", borderRadius: 999, border: `1.5px solid ${value === o ? C.taupe : C.line}`, background: value === o ? C.creamDeep : C.white, cursor: "pointer", fontSize: 13, fontFamily: "Jost", color: value === o ? C.taupeDark : C.charcoal }}>{o}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+function CheckboxLine({ checked, onChange, children }) {
+  return (
+    <label style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13.5, color: C.charcoalSoft, marginBottom: 12, cursor: "pointer" }}>
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} style={{ marginTop: 3 }} />
+      <span>{children}</span>
+    </label>
+  );
+}
+function IntakeSubmitted({ title, message, navigate }) {
+  return (
+    <div className="gc-fade-in gc-container" style={{ padding: "80px 22px", maxWidth: 560, textAlign: "center" }}>
+      <CheckCircle2 size={44} color={C.sage} style={{ marginBottom: 18 }} />
+      <h1 className="gc-serif" style={{ fontSize: 28, marginBottom: 12 }}>{title}</h1>
+      <p style={{ color: C.charcoalSoft, fontSize: 15, lineHeight: 1.7, marginBottom: 28 }}>{message}</p>
+      <button onClick={() => navigate("home")} className="gc-btn gc-btn-primary">Back to Home</button>
+    </div>
+  );
+}
+
+/* ============================== ORGANIZATION & DECLUTTERING REQUEST ============================== */
+const ORG_NEEDS_OPTIONS = ["Decluttering", "Home Organization", "Whole-Home Reset", "Closet Organization", "Kitchen/Pantry Organization", "Bedroom Organization", "Children's Rooms/Toys", "Basement/Storage", "Garage Organization", "Packing for a Move", "Unpacking After a Move", "Donation Sorting/Preparation", "Seasonal Organization", "Laundry/Linen Organization", "General Household Assistance", "Cleaning After Organization", "Other"];
+const ORG_AREAS_OPTIONS = ["Kitchen", "Living Room", "Dining Room", "Primary Bedroom", "Additional Bedrooms", "Bathrooms", "Closets", "Children's Areas", "Office", "Basement", "Garage", "Storage Room/Locker", "Laundry Room", "Whole Home", "Other"];
+const ORG_UNWANTED_OPTIONS = ["Organize for donation", "Box/bag for donation", "Prepare items for disposal", "Help determine what to keep/donate", "Client will handle removal", "Not applicable"];
+const ORG_ADDON_OPTIONS = ["Purchase organization bins/products", "Donation drop-off", "Packing", "Unpacking", "Cleaning", "Furniture/rearranging assistance", "Other"];
+
+function OrganizationRequestPage({ navigate }) {
+  const [f, setF] = useState({
+    name: "", phone: "", email: "", address: "", preferredDate: "", altDate: "", datesFlexible: "",
+    homeType: "", sqft: "", bedrooms: "", bathrooms: "", occupied: "",
+    needsHelpWith: [], areas: [], condition: "", unwantedItems: [], workStyle: "",
+    addonServices: [], goals: "", doNotTouch: "", budget: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
+  const toggle = (k, v) => setF((p) => ({ ...p, [k]: p[k].includes(v) ? p[k].filter((x) => x !== v) : [...p[k], v] }));
+
+  const canSubmit = f.name && f.phone && f.email && f.address && f.preferredDate && f.homeType && f.sqft && f.needsHelpWith.length > 0 && f.areas.length > 0 && f.condition && f.goals;
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    await notifyFormSubmission("organization-request", {
+      name: f.name, phone: f.phone, email: f.email, address: f.address,
+      preferredDate: f.preferredDate, altDate: f.altDate, datesFlexible: f.datesFlexible,
+      homeType: f.homeType, sqft: f.sqft, bedrooms: f.bedrooms, bathrooms: f.bathrooms, occupied: f.occupied,
+      needsHelpWith: f.needsHelpWith.join(", "), areas: f.areas.join(", "), condition: f.condition,
+      unwantedItems: f.unwantedItems.join(", "), workStyle: f.workStyle, addonServices: f.addonServices.join(", "),
+      goals: f.goals, doNotTouch: f.doNotTouch, budget: f.budget,
+    });
+    setSubmitting(false);
+    setDone(true);
+    window.scrollTo(0, 0);
+  };
+
+  if (done) return <IntakeSubmitted navigate={navigate} title="Request Received"
+    message="Thank you! Abby will personally review your organization request and reach out to confirm details, timing, and pricing." />;
+
+  return (
+    <div className="gc-fade-in gc-container" style={{ padding: "56px 22px 90px", maxWidth: 720 }}>
+      <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <SectionEyebrow>Organization &amp; Decluttering</SectionEyebrow>
+        <h1 className="gc-serif" style={{ fontSize: 32 }}>Request Your Home Reset</h1>
+        <p style={{ color: C.charcoalSoft, marginTop: 8 }}>Tell us about your space and goals — we'll follow up to confirm scope and pricing.</p>
+      </div>
+      <div className="gc-card" style={{ padding: 26 }}>
+        <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 14 }}>Contact Information</h3>
+        <TextField label="Full Name" required value={f.name} onChange={(v) => set("name", v)} />
+        <TextField label="Phone Number" required value={f.phone} onChange={(v) => set("phone", v)} />
+        <TextField label="Email Address" required type="email" value={f.email} onChange={(v) => set("email", v)} />
+        <TextField label="Service Address" required value={f.address} onChange={(v) => set("address", v)} />
+        <TextField label="Preferred Service Date" required type="date" value={f.preferredDate} onChange={(v) => set("preferredDate", v)} />
+        <TextField label="Alternate Date" type="date" value={f.altDate} onChange={(v) => set("altDate", v)} />
+        <RadioGroup label="Are your dates flexible?" options={["Yes", "No"]} value={f.datesFlexible} onChange={(v) => set("datesFlexible", v)} />
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>Tell Us About Your Home</h3>
+        <RadioGroup label="Type of Home" required options={["Condo/Apartment", "Townhouse", "Semi-Detached", "Detached", "Other"]} value={f.homeType} onChange={(v) => set("homeType", v)} />
+        <TextField label="Approximate Square Footage" required value={f.sqft} onChange={(v) => set("sqft", v)} />
+        <TextField label="Number of Bedrooms" value={f.bedrooms} onChange={(v) => set("bedrooms", v)} />
+        <TextField label="Number of Bathrooms" value={f.bathrooms} onChange={(v) => set("bathrooms", v)} />
+        <RadioGroup label="Is the home currently occupied?" options={["Yes", "No"]} value={f.occupied} onChange={(v) => set("occupied", v)} />
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>What Do You Need Help With?</h3>
+        <CheckboxGroup required options={ORG_NEEDS_OPTIONS} selected={f.needsHelpWith} onToggle={(v) => toggle("needsHelpWith", v)} />
+
+        <FieldLabel required>Which Areas Need Attention?</FieldLabel>
+        <CheckboxGroup options={ORG_AREAS_OPTIONS} selected={f.areas} onToggle={(v) => toggle("areas", v)} />
+
+        <RadioGroup label="Current Condition — how would you describe the areas we're working on?" required
+          options={["Light — Mostly organized; needs resetting", "Moderate — Clutter and items need sorting/organizing", "Heavy — Significant clutter; multiple areas need sorting", "Major Reset — Large volume of belongings requiring extensive sorting, boxing or removal"]}
+          value={f.condition} onChange={(v) => set("condition", v)} />
+
+        <CheckboxGroup label="What would you like us to do with unwanted items?" options={ORG_UNWANTED_OPTIONS} selected={f.unwantedItems} onToggle={(v) => toggle("unwantedItems", v)} />
+        <RadioGroup label="How would you like us to work?" options={["I will be present and make decisions with the team", "I will provide instructions and allow the team to organize independently", "Combination of both"]} value={f.workStyle} onChange={(v) => set("workStyle", v)} />
+        <CheckboxGroup label="Additional Services" options={ORG_ADDON_OPTIONS} selected={f.addonServices} onToggle={(v) => toggle("addonServices", v)} />
+
+        <TextAreaField label="Your Goals — what are the biggest challenges with your space, and what would you like us to accomplish?" required value={f.goals} onChange={(v) => set("goals", v)} />
+        <TextAreaField label="Anything We Should NOT Touch?" value={f.doNotTouch} onChange={(v) => set("doNotTouch", v)} />
+
+        <div style={{ marginBottom: 16, padding: "12px 14px", borderRadius: 10, background: C.creamDeep, fontSize: 13, color: C.charcoalSoft }}>
+          📷 Photos help us estimate team size, time, and pricing — please email or text clear photos of each area to <strong>{CONTACT.email}</strong> or <strong>{CONTACT.phone}</strong> after submitting this form.
+        </div>
+
+        <RadioGroup label="Budget (optional)" options={["Under $250", "$250–$500", "$500–$750", "$750–$1,000", "$1,000+", "Not sure — please recommend a package"]} value={f.budget} onChange={(v) => set("budget", v)} />
+
+        <button onClick={handleSubmit} disabled={!canSubmit || submitting} className="gc-btn gc-btn-primary gc-btn-block" style={{ marginTop: 8 }}>
+          {submitting ? <><Loader2 size={15} className="gc-spin" /> Submitting...</> : "Request My Home Reset"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== MOVING QUOTE REQUEST ============================== */
+const MOVING_ITEMS_OPTIONS = ["Boxes/Bins", "Queen/King Bed", "Single/Double Bed", "Mattress(es)", "Dressers", "Nightstands", "Sofa", "Sectional", "Chairs", "Dining Table", "Dining Chairs", "Desk", "Office Furniture", "TV", "TV Stand", "Bookcases/Shelving", "Appliances", "Patio Furniture", "Children's Furniture", "Exercise Equipment", "Garage Items", "Other"];
+const MOVING_SERVICES_OPTIONS = ["Truck & Transportation", "Loading & Unloading", "Furniture Disassembly", "Furniture Reassembly", "Furniture Wrapping/Protection", "Packing", "Unpacking", "Home Organization", "Move-Out Cleaning", "Move-In Cleaning", "Donation/Disposal Assistance"];
+
+function MovingQuotePage({ navigate }) {
+  const [f, setF] = useState({
+    name: "", phone: "", email: "", preferredDate: "", altDate: "", datesFlexible: "",
+    pickupAddress: "", pickupHomeType: "", pickupSqft: "", pickupBedrooms: "", pickupBasement: "", pickupGarage: "", pickupStorage: "",
+    destAddress: "", destHomeType: "", distance: "",
+    accessPickup: "", accessDest: "",
+    itemsMoving: [], boxCount: "", hasSpecialtyItems: "", specialtyDescription: "",
+    additionalServices: [], packingStatus: "", notes: "", agreed: false,
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
+  const toggle = (k, v) => setF((p) => ({ ...p, [k]: p[k].includes(v) ? p[k].filter((x) => x !== v) : [...p[k], v] }));
+
+  const canSubmit = f.name && f.phone && f.email && f.preferredDate && f.pickupAddress && f.pickupHomeType && f.pickupSqft && f.pickupBedrooms && f.destAddress && f.destHomeType && f.itemsMoving.length > 0 && f.boxCount && f.hasSpecialtyItems && f.packingStatus && f.agreed;
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    await notifyFormSubmission("moving-quote-request", {
+      name: f.name, phone: f.phone, email: f.email, preferredDate: f.preferredDate, altDate: f.altDate, datesFlexible: f.datesFlexible,
+      pickupAddress: f.pickupAddress, pickupHomeType: f.pickupHomeType, pickupSqft: f.pickupSqft, pickupBedrooms: f.pickupBedrooms,
+      pickupBasement: f.pickupBasement, pickupGarage: f.pickupGarage, pickupStorage: f.pickupStorage,
+      destAddress: f.destAddress, destHomeType: f.destHomeType, distance: f.distance,
+      accessPickup: f.accessPickup, accessDest: f.accessDest,
+      itemsMoving: f.itemsMoving.join(", "), boxCount: f.boxCount, hasSpecialtyItems: f.hasSpecialtyItems, specialtyDescription: f.specialtyDescription,
+      additionalServices: f.additionalServices.join(", "), packingStatus: f.packingStatus, notes: f.notes,
+    });
+    setSubmitting(false);
+    setDone(true);
+    window.scrollTo(0, 0);
+  };
+
+  if (done) return <IntakeSubmitted navigate={navigate} title="Quote Request Received"
+    message="Thank you! Abby will review your inventory and access details and follow up with your moving quote." />;
+
+  return (
+    <div className="gc-fade-in gc-container" style={{ padding: "56px 22px 90px", maxWidth: 720 }}>
+      <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <SectionEyebrow>Moving &amp; Home Transition</SectionEyebrow>
+        <h1 className="gc-serif" style={{ fontSize: 32 }}>Request Your Moving Quote</h1>
+        <p style={{ color: C.charcoalSoft, marginTop: 8 }}>Quotes are reviewed against your inventory and access details before we confirm a flat rate.</p>
+      </div>
+      <div className="gc-card" style={{ padding: 26, marginBottom: 24 }}>
+        <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 4 }}>Suggested Starting Prices</h3>
+        <p style={{ fontSize: 12.5, color: C.charcoalSoft, marginBottom: 16 }}>Final pricing depends on inventory, access, and distance — confirmed after we review your quote request.</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+          {[
+            { home: "Studio / 1-bed condo", price: "$500+" },
+            { home: "2-bed condo", price: "$600–$700+" },
+            { home: "Small townhouse / 2-bed home", price: "$700–$850+" },
+            { home: "3-bed / ~1,500–2,000 sq ft", price: "$900–$1,100+" },
+            { home: "4-bed / ~2,000–2,500 sq ft", price: "$1,100–$1,400+" },
+            { home: "Large 4–5 bed / 2,500–3,500 sq ft", price: "$1,400–$1,800+" },
+            { home: "XL homes over 3,000 sq ft", price: "Custom quote" },
+          ].map((row, i, arr) => (
+            <div key={row.home} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.line}` : "none", fontSize: 14 }}>
+              <span style={{ color: C.charcoalSoft }}>{row.home}</span>
+              <span style={{ fontWeight: 600, color: C.taupeDark }}>{row.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="gc-card" style={{ padding: 26 }}>
+        <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 14 }}>Contact Information</h3>
+        <TextField label="Full Name" required value={f.name} onChange={(v) => set("name", v)} />
+        <TextField label="Phone Number" required value={f.phone} onChange={(v) => set("phone", v)} />
+        <TextField label="Email Address" required type="email" value={f.email} onChange={(v) => set("email", v)} />
+        <TextField label="Preferred Moving Date" required type="date" value={f.preferredDate} onChange={(v) => set("preferredDate", v)} />
+        <TextField label="Alternate Date" type="date" value={f.altDate} onChange={(v) => set("altDate", v)} />
+        <RadioGroup label="Are your dates flexible?" options={["Yes", "No"]} value={f.datesFlexible} onChange={(v) => set("datesFlexible", v)} />
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>Moving From</h3>
+        <TextField label="Pickup Address" required value={f.pickupAddress} onChange={(v) => set("pickupAddress", v)} />
+        <RadioGroup label="Home Type" required options={["Condo/Apartment", "Townhouse", "Semi-Detached", "Detached", "Other"]} value={f.pickupHomeType} onChange={(v) => set("pickupHomeType", v)} />
+        <TextField label="Approximate Square Footage" required value={f.pickupSqft} onChange={(v) => set("pickupSqft", v)} />
+        <TextField label="Number of Bedrooms" required value={f.pickupBedrooms} onChange={(v) => set("pickupBedrooms", v)} />
+        <RadioGroup label="Basement?" options={["Yes", "No"]} value={f.pickupBasement} onChange={(v) => set("pickupBasement", v)} />
+        <RadioGroup label="Garage?" options={["Yes", "No"]} value={f.pickupGarage} onChange={(v) => set("pickupGarage", v)} />
+        <RadioGroup label="Storage Locker?" options={["Yes", "No"]} value={f.pickupStorage} onChange={(v) => set("pickupStorage", v)} />
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>Moving To</h3>
+        <TextField label="Destination Address" required value={f.destAddress} onChange={(v) => set("destAddress", v)} />
+        <RadioGroup label="Home Type" required options={["Condo/Apartment", "Townhouse", "Semi-Detached", "Detached", "Other"]} value={f.destHomeType} onChange={(v) => set("destHomeType", v)} />
+        <TextField label="Approximate distance between locations (if known)" value={f.distance} onChange={(v) => set("distance", v)} />
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>Access at Pickup &amp; Destination</h3>
+        <p style={{ fontSize: 12.5, color: C.charcoalSoft, marginBottom: 10 }}>For each location, note: ground level access, flights of stairs, elevator (and if reserved), loading dock, distance between parking and entrance, parking restrictions, narrow staircases/hallways, or other concerns.</p>
+        <TextAreaField label="Pickup location access details" value={f.accessPickup} onChange={(v) => set("accessPickup", v)} />
+        <TextAreaField label="Destination access details" value={f.accessDest} onChange={(v) => set("accessDest", v)} />
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>What Are We Moving?</h3>
+        <CheckboxGroup required options={MOVING_ITEMS_OPTIONS} selected={f.itemsMoving} onToggle={(v) => toggle("itemsMoving", v)} />
+        <RadioGroup label="Approximately how many boxes/bins will there be?" required options={["Under 10", "10–25", "26–50", "51–75", "75+"]} value={f.boxCount} onChange={(v) => set("boxCount", v)} />
+
+        <RadioGroup label="Are there any unusually heavy, oversized, fragile or high-value items (safes, pianos, large glass or marble/stone furniture, exercise equipment)?" required options={["Yes", "No"]} value={f.hasSpecialtyItems} onChange={(v) => set("hasSpecialtyItems", v)} />
+        {f.hasSpecialtyItems === "Yes" && <TextAreaField label="Please describe the item(s)" value={f.specialtyDescription} onChange={(v) => set("specialtyDescription", v)} />}
+
+        <CheckboxGroup label="Additional Moving Services" options={MOVING_SERVICES_OPTIONS} selected={f.additionalServices} onToggle={(v) => toggle("additionalServices", v)} />
+        <RadioGroup label="Packing Status" required options={["Everything will be packed and ready", "Mostly packed", "Some packing assistance required", "Full packing assistance required"]} value={f.packingStatus} onChange={(v) => set("packingStatus", v)} />
+
+        <div style={{ marginBottom: 16, padding: "12px 14px", borderRadius: 10, background: C.creamDeep, fontSize: 13, color: C.charcoalSoft }}>
+          📷 Please email or text photos or a walkthrough video of the furniture and approximate volume of belongings to <strong>{CONTACT.email}</strong> or <strong>{CONTACT.phone}</strong> after submitting.
+        </div>
+
+        <TextAreaField label="Anything Else We Should Know?" value={f.notes} onChange={(v) => set("notes", v)} />
+
+        <CheckboxLine checked={f.agreed} onChange={(v) => set("agreed", v)}>
+          I understand that moving quotes are based on the information, inventory, photos and access details provided. Additional items, additional stops, access issues, waiting time or work outside the original scope may result in additional charges.
+        </CheckboxLine>
+
+        <button onClick={handleSubmit} disabled={!canSubmit || submitting} className="gc-btn gc-btn-primary gc-btn-block">
+          {submitting ? <><Loader2 size={15} className="gc-spin" /> Submitting...</> : "Get My Free Moving Quote"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== EVENT SUPPORT BOOKING ============================== */
+const EVENT_TASK_OPTIONS = ["Setting out client-provided decorations", "Setting tables/chairs", "Setting out plates, cups, napkins, cutlery, etc.", "Setting out client-provided food", "Setting up a buffet/snack/dessert area", "Setting up a beverage area", "Picking up pre-ordered food", "Picking up pre-ordered event supplies", "Bringing items from the car into the venue", "Organizing gifts", "Putting out party favours", "Replenishing food/drinks during the event", "Clearing tables", "Collecting garbage", "Washing/loading dishes", "Keeping the kitchen/event area tidy", "Packing decorations/items after the event", "Light cleanup after the event", "General assistance as directed by the client", "Other"];
+const EVENT_PICKUP_OPTIONS = ["No", "Pre-ordered food", "Cake/desserts", "Ice/beverages", "Pre-purchased event supplies", "Other"];
+
+function EventSupportPage({ navigate }) {
+  const [f, setF] = useState({
+    name: "", phone: "", email: "", address: "", eventDate: "",
+    eventType: "", guests: "", startTime: "", endTime: "", helperArrival: "", hoursNeeded: "", helpersRequested: "",
+    tasks: [], pickupNeeds: [], pickupAddress: "", pickupWhat: "", pickupPaid: "",
+    understandProvided: false, understandRole: false,
+    describeGoal: "", notesBeforeArriving: "",
+    understandHours: false, understandScope: false,
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
+  const toggle = (k, v) => setF((p) => ({ ...p, [k]: p[k].includes(v) ? p[k].filter((x) => x !== v) : [...p[k], v] }));
+
+  const needsPickup = f.pickupNeeds.length > 0 && !(f.pickupNeeds.length === 1 && f.pickupNeeds[0] === "No");
+  const canSubmit = f.name && f.phone && f.email && f.address && f.eventDate && f.eventType && f.guests && f.startTime && f.endTime && f.helperArrival && f.hoursNeeded && f.tasks.length > 0 && f.describeGoal && f.understandProvided && f.understandRole && f.understandHours && f.understandScope;
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    await notifyFormSubmission("event-support-request", {
+      name: f.name, phone: f.phone, email: f.email, address: f.address, eventDate: f.eventDate,
+      eventType: f.eventType, guests: f.guests, startTime: f.startTime, endTime: f.endTime,
+      helperArrival: f.helperArrival, hoursNeeded: f.hoursNeeded, helpersRequested: f.helpersRequested,
+      tasks: f.tasks.join(", "), pickupNeeds: f.pickupNeeds.join(", "), pickupAddress: f.pickupAddress,
+      pickupWhat: f.pickupWhat, pickupPaid: f.pickupPaid,
+      describeGoal: f.describeGoal, notesBeforeArriving: f.notesBeforeArriving,
+    });
+    setSubmitting(false);
+    setDone(true);
+    window.scrollTo(0, 0);
+  };
+
+  if (done) return <IntakeSubmitted navigate={navigate} title="Event Support Request Received"
+    message="Thank you! Abby will personally review your Event Support request and follow up to confirm availability and scope." />;
+
+  return (
+    <div className="gc-fade-in gc-container" style={{ padding: "56px 22px 90px", maxWidth: 720 }}>
+      <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <SectionEyebrow>Event Support</SectionEyebrow>
+        <h1 className="gc-serif" style={{ fontSize: 32 }}>Request Your Event Support</h1>
+        <p style={{ color: C.charcoalSoft, marginTop: 8 }}>Extra hands for your event — setup, serving, and cleanup, under your direction.</p>
+      </div>
+      <div className="gc-card" style={{ padding: 26 }}>
+        <h3 className="gc-serif" style={{ fontSize: 17, marginBottom: 14 }}>Your Information</h3>
+        <TextField label="Full Name" required value={f.name} onChange={(v) => set("name", v)} />
+        <TextField label="Phone Number" required value={f.phone} onChange={(v) => set("phone", v)} />
+        <TextField label="Email Address" required type="email" value={f.email} onChange={(v) => set("email", v)} />
+        <TextField label="Event Address" required value={f.address} onChange={(v) => set("address", v)} />
+        <TextField label="Event Date" required type="date" value={f.eventDate} onChange={(v) => set("eventDate", v)} />
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>About Your Event</h3>
+        <RadioGroup label="Type of Event" required options={["Birthday", "Baby Shower", "Bridal Shower", "Wedding", "Dinner Party", "Family Gathering", "Corporate Event", "Other"]} value={f.eventType} onChange={(v) => set("eventType", v)} />
+        <TextField label="Approximate Number of Guests" required value={f.guests} onChange={(v) => set("guests", v)} />
+        <TextField label="Event Start Time" required type="time" value={f.startTime} onChange={(v) => set("startTime", v)} />
+        <TextField label="Event End Time" required type="time" value={f.endTime} onChange={(v) => set("endTime", v)} />
+        <TextField label="What time would you like your Event Support helper to arrive?" required type="time" value={f.helperArrival} onChange={(v) => set("helperArrival", v)} />
+        <TextField label="How many hours of help do you need?" required value={f.hoursNeeded} onChange={(v) => set("hoursNeeded", v)} />
+        <RadioGroup label="Number of helpers requested" options={["1", "2", "Not Sure"]} value={f.helpersRequested} onChange={(v) => set("helpersRequested", v)} />
+
+        <FieldLabel required>What would you like your Event Support helper to assist with?</FieldLabel>
+        <CheckboxGroup options={EVENT_TASK_OPTIONS} selected={f.tasks} onToggle={(v) => toggle("tasks", v)} />
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>Food/Supply Pickup</h3>
+        <CheckboxGroup label="Does your Event Support helper need to pick anything up before the event?" options={EVENT_PICKUP_OPTIONS} selected={f.pickupNeeds} onToggle={(v) => toggle("pickupNeeds", v)} />
+        {needsPickup && (
+          <>
+            <TextField label="Pickup Address" value={f.pickupAddress} onChange={(v) => set("pickupAddress", v)} />
+            <TextField label="What needs to be picked up?" value={f.pickupWhat} onChange={(v) => set("pickupWhat", v)} />
+            <RadioGroup label="Has everything already been ordered and paid for?" options={["Yes", "No"]} value={f.pickupPaid} onChange={(v) => set("pickupPaid", v)} />
+            <div style={{ marginBottom: 16, padding: "12px 14px", borderRadius: 10, background: C.creamDeep, fontSize: 13, color: C.charcoalSoft }}>
+              Your Event Support helper can pick up a prepaid catering order — this is not a personal shopping service (e.g. shopping a list of items at a store).
+            </div>
+          </>
+        )}
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>What Will Be Provided?</h3>
+        <CheckboxLine checked={f.understandProvided} onChange={(v) => set("understandProvided", v)}>
+          I understand that I am responsible for providing all decorations, food, beverages, serving supplies, event supplies and instructions required for the event.
+        </CheckboxLine>
+        <CheckboxLine checked={f.understandRole} onChange={(v) => set("understandRole", v)}>
+          I understand that my Grace &amp; Co. Event Support helper is there to assist with tasks under my direction and is not acting as an event planner, decorator, caterer or event coordinator.
+        </CheckboxLine>
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>Tell Us What You Need</h3>
+        <TextAreaField label="Please briefly describe what you would like your Event Support helper to accomplish during the booked time" required value={f.describeGoal} onChange={(v) => set("describeGoal", v)} />
+        <TextAreaField label="Is there anything important your helper should know before arriving?" value={f.notesBeforeArriving} onChange={(v) => set("notesBeforeArriving", v)} />
+
+        <div style={{ marginBottom: 16, padding: "12px 14px", borderRadius: 10, background: C.creamDeep, fontSize: 13, color: C.charcoalSoft }}>
+          📷 Photos of the space or setup inspiration are optional — feel free to email or text them to <strong>{CONTACT.email}</strong> or <strong>{CONTACT.phone}</strong> after submitting.
+        </div>
+
+        <h3 className="gc-serif" style={{ fontSize: 17, margin: "24px 0 14px" }}>Final Booking Agreement</h3>
+        <CheckboxLine checked={f.understandHours} onChange={(v) => set("understandHours", v)}>
+          I understand that Event Support services are booked for a specific number of hours and additional time is subject to helper availability and additional charges.
+        </CheckboxLine>
+        <CheckboxLine checked={f.understandScope} onChange={(v) => set("understandScope", v)}>
+          I understand that tasks must remain within the agreed Event Support scope.
+        </CheckboxLine>
+
+        <button onClick={handleSubmit} disabled={!canSubmit || submitting} className="gc-btn gc-btn-primary gc-btn-block">
+          {submitting ? <><Loader2 size={15} className="gc-spin" /> Submitting...</> : "Request Your Event Support"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ============================== CONTACT PAGE ============================== */
 function ContactPage({ navigate }) {
+  const [f, setF] = useState({ name: "", email: "", phone: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
+  const canSubmit = f.name && f.email && f.message;
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    await notifyFormSubmission("contact-request", { name: f.name, email: f.email, phone: f.phone, message: f.message });
+    setSubmitting(false);
+    setDone(true);
+  };
+
   return (
     <div className="gc-fade-in gc-container" style={{ padding: "56px 22px 90px", maxWidth: 720 }}>
       <div style={{ textAlign: "center", marginBottom: 40 }}>
         <SectionEyebrow>Get in touch</SectionEyebrow>
         <h1 className="gc-serif" style={{ fontSize: 34 }}>Contact Grace &amp; Co.</h1>
         <p style={{ color: C.charcoalSoft, marginTop: 8 }}>We would love to hear from you. Reach out by phone, email, or social media.</p>
+      </div>
+      <div className="gc-card" style={{ padding: 26, marginBottom: 32 }}>
+        <h3 className="gc-serif" style={{ fontSize: 18, marginBottom: 16 }}>Send Us a Message</h3>
+        {done ? (
+          <div style={{ display: "flex", gap: 10, alignItems: "center", color: C.sage, fontSize: 15 }}>
+            <CheckCircle2 size={20} /> Thanks! Your message has been sent — we'll get back to you soon.
+          </div>
+        ) : (
+          <>
+            <TextField label="Full Name" required value={f.name} onChange={(v) => set("name", v)} />
+            <TextField label="Email Address" required type="email" value={f.email} onChange={(v) => set("email", v)} />
+            <TextField label="Phone Number" value={f.phone} onChange={(v) => set("phone", v)} />
+            <TextAreaField label="Message" required value={f.message} onChange={(v) => set("message", v)} />
+            <button onClick={handleSubmit} disabled={!canSubmit || submitting} className="gc-btn gc-btn-primary gc-btn-block">
+              {submitting ? <><Loader2 size={15} className="gc-spin" /> Sending...</> : "Send Message"}
+            </button>
+          </>
+        )}
       </div>
       <div className="gc-grid-2" style={{ gap: 24, marginBottom: 32, alignItems: "start" }}>
         <div className="gc-card" style={{ padding: 26 }}>
@@ -2223,6 +2672,9 @@ export default function App() {
           {page === "gallery" && <GalleryPage navigate={navigate} />}
           {page === "faq" && <FAQPage />}
           {page === "contact" && <ContactPage navigate={navigate} />}
+          {page === "organization" && <OrganizationRequestPage navigate={navigate} />}
+          {page === "moving" && <MovingQuotePage navigate={navigate} />}
+          {page === "event-support" && <EventSupportPage navigate={navigate} />}
           {page === "legal" && <LegalPage />}
           {page === "areas" && <ServiceAreasPage navigate={navigate} />}
           {page === "book" && <BookPage bookings={bookings} addBooking={addBooking} navigate={navigate} initialCategory={bookCategory} />}
