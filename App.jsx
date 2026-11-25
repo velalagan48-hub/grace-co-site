@@ -423,7 +423,7 @@ function GlobalStyle() {
       @media (min-width: 960px) {
         .gc-grid-services { grid-template-columns: repeat(4,1fr); }
       }
-      .gc-service-card { display: block; text-align: left; background: ${C.white}; border: 1px solid ${C.line}; border-radius: 16px; padding: 20px 20px 18px; cursor: pointer; text-decoration: none; color: inherit; transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease; min-height: 160px; max-height: 200px; display: flex; flex-direction: column; }
+      .gc-service-card { display: block; text-align: left; background: ${C.white}; border: 1px solid ${C.line}; border-radius: 16px; padding: 20px 20px 18px; cursor: pointer; text-decoration: none; color: inherit; transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease; min-height: 160px; display: flex; flex-direction: column; }
       .gc-service-card:hover, .gc-service-card:focus-visible { transform: translateY(-3px); box-shadow: 0 12px 28px -14px rgba(43,36,32,0.28); border-color: ${C.taupe}; outline: none; }
       .gc-service-card:focus-visible { box-shadow: 0 0 0 3px rgba(168,133,99,0.28), 0 12px 28px -14px rgba(43,36,32,0.28); }
       table.gc-table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -472,9 +472,11 @@ function Header({ page, navigate, menuOpen, setMenuOpen }) {
     { id: "home", label: "Home" },
     { id: "about", label: "About" },
     { id: "services", label: "Services" },
+    { id: "services", label: "Pricing" },
     { id: "gallery", label: "Gallery" },
     { id: "faq", label: "FAQ" },
     { id: "contact", label: "Contact" },
+    { id: "manage", label: "Manage My Booking" },
   ];
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(251,246,239,0.92)", backdropFilter: "blur(6px)", borderBottom: `1px solid ${C.line}` }}>
@@ -482,9 +484,9 @@ function Header({ page, navigate, menuOpen, setMenuOpen }) {
         <button onClick={() => navigate("home")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }} aria-label="Go to homepage">
           <Wordmark />
         </button>
-        <nav style={{ display: "none", gap: 28, alignItems: "center" }} className="gc-desktop-nav">
+        <nav style={{ display: "none", gap: 16, alignItems: "center" }} className="gc-desktop-nav">
           {links.map((l) => (
-            <button key={l.id} onClick={() => navigate(l.id)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "Jost", fontSize: 14.5, fontWeight: 500, color: page === l.id ? C.taupeDark : C.charcoal, padding: "6px 2px", borderBottom: page === l.id ? `2px solid ${C.taupe}` : "2px solid transparent" }}>
+            <button key={l.label} onClick={() => navigate(l.id)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "Jost", fontSize: 14.5, fontWeight: 500, color: page === l.id && l.label !== "Pricing" ? C.taupeDark : C.charcoal, padding: "6px 2px", borderBottom: page === l.id && l.label !== "Pricing" ? `2px solid ${C.taupe}` : "2px solid transparent" }}>
               {l.label}
             </button>
           ))}
@@ -497,7 +499,7 @@ function Header({ page, navigate, menuOpen, setMenuOpen }) {
       {menuOpen && (
         <div className="gc-mobile-menu" style={{ borderTop: `1px solid ${C.line}`, background: C.cream, padding: "10px 22px 18px", display: "flex", flexDirection: "column", gap: 4 }}>
           {links.map((l) => (
-            <button key={l.id} onClick={() => navigate(l.id)} style={{ textAlign: "left", background: "none", border: "none", cursor: "pointer", fontFamily: "Jost", fontSize: 16, padding: "10px 4px", color: page === l.id ? C.taupeDark : C.charcoal, fontWeight: page === l.id ? 600 : 400 }}>
+            <button key={l.label} onClick={() => navigate(l.id)} style={{ textAlign: "left", background: "none", border: "none", cursor: "pointer", fontFamily: "Jost", fontSize: 16, padding: "10px 4px", color: page === l.id && l.label !== "Pricing" ? C.taupeDark : C.charcoal, fontWeight: page === l.id && l.label !== "Pricing" ? 600 : 400 }}>
               {l.label}
             </button>
           ))}
@@ -553,12 +555,12 @@ function Footer({ navigate }) {
               <button onClick={() => navigate("book")} style={{ background: "none", border: "none", cursor: "pointer", color: "inherit", textAlign: "left", padding: 0, font: "inherit" }}>Book a Cleaning</button>
               <button onClick={() => navigate("manage")} style={{ background: "none", border: "none", cursor: "pointer", color: "inherit", textAlign: "left", padding: 0, font: "inherit" }}>Manage My Booking</button>
               <button onClick={() => navigate("legal")} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.55)", textAlign: "left", padding: 0, font: "inherit", fontSize: 13 }}>Legal & Policies</button>
-              <button onClick={() => navigate("admin")} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.35)", textAlign: "left", padding: 0, font: "inherit", fontSize: 13 }}>Business Login</button>
             </div>
           </div>
         </div>
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.15)", marginTop: 36, paddingTop: 18, fontSize: 12.5, color: "rgba(255,255,255,0.45)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
           <span>© {new Date().getFullYear()} Grace &amp; Co. Home Services. Helping families love where they live. ♡</span>
+          <button onClick={() => navigate("admin")} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.45)", fontSize: 12.5, padding: 0, font: "inherit" }}>Business Login (staff only)</button>
         </div>
       </div>
     </footer>
@@ -599,9 +601,10 @@ function HomePage({ navigate }) {
             <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
               <button onClick={() => navigate("book")} className="gc-btn" style={{ background: C.white, color: C.charcoal }}>Book Your Cleaning <ArrowRight size={16} /></button>
               <button onClick={() => navigate("organization")} className="gc-btn gc-btn-outline-light">Book Your Organization <ArrowRight size={16} /></button>
+              <button onClick={() => navigate("book", "concierge")} className="gc-btn gc-btn-outline-light">Book Your Household Assistant <ArrowRight size={16} /></button>
             </div>
             <div style={{ marginBottom: 26 }}>
-              <button onClick={() => navigate("services")} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.85)", fontFamily: "Jost", fontSize: 13.5, textDecoration: "underline", padding: 0 }}>See Pricing</button>
+              <button onClick={() => navigate("services")} className="gc-btn gc-btn-outline-light">See Pricing <ArrowRight size={16} /></button>
             </div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 9, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 999, padding: "8px 16px", fontSize: 13.5 }}>
               <Sparkles size={15} className="gc-sparkle" /> 🎄 Christmas Special: 20% off Deep Cleaning in December
@@ -616,8 +619,9 @@ function HomePage({ navigate }) {
         <h2 className="gc-serif" style={{ fontSize: 30, marginBottom: 36 }}>Our Services</h2>
         <div className="gc-grid-services" style={{ marginBottom: 28, textAlign: "left" }}>
           {[
-            { Icon: Sparkles, title: "Home Cleaning", desc: "Basic, Deep & Move-In/Move-Out", cta: "View Cleaning", onClick: () => navigate("services", "basic") },
-            { Icon: Package, title: "Home Organization", desc: "Decluttering & organization support", cta: "View Organization", onClick: () => navigate("organization") },
+            { Icon: Sparkles, title: "Home Cleaning", desc: "Basic, Deep & Move-In/Move-Out", cta: "View cleaning services & prices", onClick: () => navigate("services", "basic") },
+            { Icon: Package, title: "Home Organization", desc: "Decluttering & organization support", cta: "View organization services & prices", onClick: () => navigate("services", "organization") },
+            { Icon: Shirt, title: "Household Assistant", desc: "Laundry, dishes, tidying & everyday household support", price: "Starting at $40/hr", cta: "View household assistant services & prices", onClick: () => navigate("services", "concierge") },
           ].map((s) => (
             <button
               key={s.title}
@@ -630,6 +634,7 @@ function HomePage({ navigate }) {
               </div>
               <div style={{ fontWeight: 600, fontSize: 15.5, marginBottom: 4, color: C.charcoal }}>{s.title}</div>
               <div style={{ fontSize: 13, color: C.charcoalSoft, lineHeight: 1.5, marginBottom: 12, flexGrow: 1 }}>{s.desc}</div>
+              {s.price && <div style={{ fontSize: 13, fontWeight: 600, color: C.taupeDark, marginBottom: 8 }}>{s.price}</div>}
               <div style={{ fontSize: 13, fontWeight: 600, color: C.taupeDark, display: "flex", alignItems: "center", gap: 4 }}>
                 {s.cta} <ArrowRight size={13} />
               </div>
@@ -796,9 +801,8 @@ function ServicesPage({ navigate, initialTab }) {
       {/* Service category tabs */}
       <div style={{ display: "flex", gap: 10, marginBottom: 32, flexWrap: "wrap", justifyContent: "center" }}>
         {[["concierge","🛎️","Household Assistant"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"],["organization","🧺","Organization"],].map(([id,icon,label]) => {
-          const isExternal = id === "organization";
           return (
-            <button key={id} onClick={() => isExternal ? navigate(id) : setActiveTab(id)} style={{ padding: "10px 20px", borderRadius: 999, border: `1.5px solid ${activeTab === id ? C.taupe : C.line}`, background: activeTab === id ? C.taupe : C.white, fontFamily: "Jost", fontWeight: 600, fontSize: 14, cursor: "pointer", color: activeTab === id ? C.white : C.charcoal }}>
+            <button key={id} onClick={() => setActiveTab(id)} style={{ padding: "10px 20px", borderRadius: 999, border: `1.5px solid ${activeTab === id ? C.taupe : C.line}`, background: activeTab === id ? C.taupe : C.white, fontFamily: "Jost", fontWeight: 600, fontSize: 14, cursor: "pointer", color: activeTab === id ? C.white : C.charcoal }}>
               {icon} {label}
             </button>
           );
@@ -987,9 +991,25 @@ function ServicesPage({ navigate, initialTab }) {
         </div>
       )}
 
-      <div style={{ textAlign: "center", marginTop: 36 }}>
-        <button onClick={() => navigate("book", activeTab)} className="gc-btn gc-btn-primary">Book Now <ArrowRight size={16} /></button>
-      </div>
+      {/* ORGANIZATION */}
+      {activeTab === "organization" && (
+        <div>
+          <div className="gc-card" style={{ padding: 28, marginBottom: 20, textAlign: "center" }}>
+            <h2 className="gc-serif" style={{ fontSize: 24, marginBottom: 6 }}>Organization / Home Reset</h2>
+            <div className="gc-serif" style={{ fontSize: 22, color: C.taupeDark, fontWeight: 600, marginBottom: 10 }}>From $35/hr</div>
+            <p style={{ fontSize: 14, color: C.charcoalSoft, lineHeight: 1.7, maxWidth: 560, margin: "0 auto 18px" }}>
+              Decluttering, closet &amp; kitchen organization, whole-home resets and donation sorting — every reset is quoted individually after your request, starting at $35/hour.
+            </p>
+            <button onClick={() => navigate("organization")} className="gc-btn gc-btn-primary">Request a quote <ArrowRight size={16} /></button>
+          </div>
+        </div>
+      )}
+
+      {activeTab !== "organization" && (
+        <div style={{ textAlign: "center", marginTop: 36 }}>
+          <button onClick={() => navigate("book", activeTab)} className="gc-btn gc-btn-primary">Book Now <ArrowRight size={16} /></button>
+        </div>
+      )}
     </div>
   );
 }
@@ -1101,6 +1121,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null);
+  const [showDepositPolicy, setShowDepositPolicy] = useState(false);
   const [form, setForm] = useState({
     name: "", email: "", phone: "", address: "", city: "", postalCode: "",
     propertyType: "", otherPropertyType: "", sqFootage: "", bedrooms: "", bathrooms: "", finishedBasement: false,
@@ -1217,7 +1238,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
     );
   }
 
-  const STEPS = ["Your Info", "Property", "Service", "Schedule", "Review"];
+  const STEPS = ["Your Info", "Property", "Service", "Schedule", "Review & request estimate"];
   return (
     <div className="gc-fade-in gc-container" style={{ padding: "44px 22px 90px", maxWidth: 680 }}>
       <div style={{ textAlign: "center", marginBottom: 8 }}>
@@ -1229,6 +1250,9 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
       {step === 1 && (
         <div className="gc-card" style={{ padding: 24 }}>
           <h2 className="gc-serif" style={{ fontSize: 19, marginBottom: 16 }}>Your information</h2>
+          <div style={{ padding: "10px 14px", borderRadius: 10, background: C.creamDeep, fontSize: 13.5, color: C.charcoalSoft, marginBottom: 16, lineHeight: 1.6 }}>
+            This sends an <strong>estimate request</strong>. We'll confirm your date and deposit within 24 hours; your date is not booked until then.
+          </div>
           <Field label="Full name *"><input className="gc-input" value={form.name} onChange={e => set("name", e.target.value)} placeholder="Jane Smith" /></Field>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             <Field label="Email *"><input className="gc-input" type="email" value={form.email} onChange={e => set("email", e.target.value)} placeholder="jane@email.com" /></Field>
@@ -1259,6 +1283,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
             <Field label="Bedrooms"><input className="gc-input" type="number" min="0" value={form.bedrooms} onChange={e => set("bedrooms", e.target.value)} placeholder="3" /></Field>
             <Field label="Bathrooms"><input className="gc-input" type="number" min="0" value={form.bathrooms} onChange={e => set("bathrooms", e.target.value)} placeholder="2" /></Field>
           </div>
+          <p style={{ fontSize: 12.5, color: C.charcoalSoft, margin: "-4px 0 14px" }}>Suggested values — change them to match your home.</p>
           <label style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 18, cursor: "pointer", fontSize: 14 }}>
             <input type="checkbox" checked={form.finishedBasement} onChange={e => set("finishedBasement", e.target.checked)} />
             Property has a finished basement to be cleaned
@@ -1272,6 +1297,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
                 </button>
               ))}
             </div>
+            <p style={{ fontSize: 12.5, color: C.charcoalSoft, marginTop: 8 }}>Recurring discounts apply from your second clean.</p>
           </Field>
           <NavButtons onBack={() => setStep(1)} onNext={() => setStep(3)} nextDisabled={!canNext2} />
         </div>
@@ -1393,6 +1419,12 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
             </div>
           )}
 
+          {form.serviceCategory !== "concierge" && priceCalc.final != null && (
+            <div style={{ padding: "10px 14px", borderRadius: 10, background: C.creamDeep, fontSize: 13.5, color: C.charcoalSoft, marginTop: 4 }}>
+              Deposit due after confirmation: <strong style={{ color: C.charcoal }}>{money(deposit)} (50%)</strong> — applied to your final invoice.
+            </div>
+          )}
+
           <NavButtons onBack={() => setStep(2)} onNext={() => setStep(4)} nextDisabled={!canNext3} />
         </div>
       )}
@@ -1427,7 +1459,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
 
       {step === 5 && (
         <div className="gc-card" style={{ padding: 24 }}>
-          <h2 className="gc-serif" style={{ fontSize: 19, marginBottom: 16 }}>Review & confirm</h2>
+          <h2 className="gc-serif" style={{ fontSize: 19, marginBottom: 16 }}>Review & request estimate</h2>
           <Row label="Name" value={form.name} />
           <Row label="Contact" value={`${form.email} · ${form.phone}`} />
           <Row label="Address" value={`${form.address}, ${form.city} ${form.postalCode}`} />
@@ -1474,13 +1506,26 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
             <input type="checkbox" checked={form.agreeDeposit} onChange={e => set("agreeDeposit", e.target.checked)} style={{ marginTop: 2 }} />
             {form.serviceCategory === "concierge"
               ? "I understand this is an inquiry for review and no deposit is required today."
-              : "I understand and agree to the deposit and cancellation policy above."}
+              : <>I understand and agree to the <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowDepositPolicy(true); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: C.taupeDark, textDecoration: "underline", font: "inherit" }}>deposit policy</button> and cancellation policy above.</>}
           </label>
           <label style={{ display: "flex", gap: 10, alignItems: "flex-start", marginTop: 10, fontSize: 13.5, color: C.charcoalSoft, cursor: "pointer" }}>
             <input type="checkbox" checked={form.agreeTerms} onChange={e => set("agreeTerms", e.target.checked)} style={{ marginTop: 2 }} />
             I confirm the information provided is accurate and agree to Grace & Co.'s terms of service.
           </label>
           <NavButtons onBack={() => setStep(4)} onNext={handleConfirm} nextDisabled={!form.agreeDeposit || !form.agreeTerms || submitting} nextLabel={submitting ? <><Loader2 size={15} className="gc-spin" /> Submitting...</> : (form.serviceCategory === "concierge" ? "Submit Inquiry" : "Get a Free Estimate")} />
+        </div>
+      )}
+      {showDepositPolicy && (
+        <div onClick={() => setShowDepositPolicy(false)} style={{ position: "fixed", inset: 0, background: "rgba(43,36,32,0.55)", zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div onClick={(e) => e.stopPropagation()} className="gc-card" style={{ maxWidth: 520, width: "100%", padding: 26, maxHeight: "85vh", overflowY: "auto" }}>
+            <h3 className="gc-serif" style={{ fontSize: 20, marginBottom: 12 }}>Deposit Policy</h3>
+            <p style={{ fontSize: 14, color: C.charcoalSoft, lineHeight: 1.7, marginBottom: 10 }}><strong style={{ color: C.charcoal }}>Deposit Requirements:</strong> A 50% deposit of the total estimated service cost is required to confirm and secure all cleaning appointments (Basic, Deep, and Move-In/Move-Out). The deposit is applied toward your final invoice.</p>
+            <p style={{ fontSize: 14, color: C.charcoalSoft, lineHeight: 1.7, marginBottom: 10 }}><strong style={{ color: C.charcoal }}>How to Pay Your Deposit:</strong> Deposits are paid by e-transfer to gracecohomeservices@gmail.com. Deposit instructions will be sent to you once your booking is confirmed by our team.</p>
+            <p style={{ fontSize: 14, color: C.charcoalSoft, lineHeight: 1.7, marginBottom: 10 }}><strong style={{ color: C.charcoal }}>Deposit Application:</strong> Your deposit is fully applied toward your final invoice. It is not an extra charge — it is simply prepayment toward the total cost of your service.</p>
+            <p style={{ fontSize: 14, color: C.charcoalSoft, lineHeight: 1.7, marginBottom: 10 }}><strong style={{ color: C.charcoal }}>When Deposit is Due:</strong> The deposit must be received within 24 hours of your booking confirmation to hold your appointment. Appointments are not guaranteed until the deposit is received.</p>
+            <p style={{ fontSize: 14, color: C.charcoalSoft, lineHeight: 1.7, marginBottom: 14 }}><strong style={{ color: C.charcoal }}>Refund Conditions:</strong> See our Cancellation &amp; Rescheduling Policy for details on deposit refunds based on notice given.</p>
+            <button onClick={() => setShowDepositPolicy(false)} className="gc-btn gc-btn-primary gc-btn-block">Close</button>
+          </div>
         </div>
       )}
     </div>
@@ -1554,10 +1599,11 @@ function ManagePage({ bookings, updateBooking }) {
         <SectionEyebrow>Manage booking</SectionEyebrow>
         <h1 className="gc-serif" style={{ fontSize: 30 }}>Find your booking</h1>
         <p style={{ color: C.charcoalSoft, marginTop: 6 }}>Enter the email or phone number you booked with.</p>
+        <p style={{ color: C.charcoalSoft, marginTop: 6, fontSize: 13.5 }}>You can view, reschedule or cancel your booking here. If we can't find it, call {CONTACT.phone}.</p>
       </div>
       <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
         <input className="gc-input" placeholder="you@email.com or phone number" value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && setSearched(true)} />
-        <button onClick={() => setSearched(true)} className="gc-btn gc-btn-primary" style={{ flexShrink: 0 }}><Search size={16} /></button>
+        <button onClick={() => setSearched(true)} className="gc-btn gc-btn-primary" style={{ flexShrink: 0 }}><Search size={16} /> Find my booking</button>
       </div>
 
       {doneMsg && <div className="gc-card" style={{ padding: 16, marginBottom: 20, background: C.blush, border: "none", fontSize: 14 }}>{doneMsg}</div>}
