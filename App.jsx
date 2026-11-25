@@ -49,7 +49,6 @@ const C = {
 /* ============================== BUSINESS CONFIG ============================== */
 // Edit these once you have things set up on your end.
 const ADMIN_PIN = "340320"; // change this to whatever PIN you want for the reports dashboard
-const NEW_CLIENT_DISCOUNT = 0.20;
 const CANCELLATION_FEE = 50;
 const CANCELLATION_WINDOW_HOURS = 24;
 
@@ -74,11 +73,11 @@ const CONTACT = {
 };
 
 const SIZE_TIERS = [
-  { id: "condo", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 200, Icon: Building2 },
-  { id: "small", label: "Small Home", sub: "1,000 – 1,500 sq ft", price: 300, Icon: HomeIcon },
-  { id: "family", label: "Family Home", sub: "1,500 – 2,000 sq ft", price: 350, Icon: HomeIcon },
-  { id: "large", label: "Large Home", sub: "2,000 – 2,500 sq ft", price: 400, Icon: HomeIcon },
-  { id: "xl", label: "Extra Large Home", sub: "2,500 – 3,000 sq ft", price: 450, Icon: HomeIcon },
+  { id: "condo", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 175, Icon: Building2 },
+  { id: "small", label: "Small Home", sub: "1,000 – 1,500 sq ft", price: 225, Icon: HomeIcon },
+  { id: "family", label: "Family Home", sub: "1,500 – 2,000 sq ft", price: 275, Icon: HomeIcon },
+  { id: "large", label: "Large Home", sub: "2,000 – 2,500 sq ft", price: 375, Icon: HomeIcon },
+  { id: "xl", label: "Extra Large Home", sub: "2,500 – 3,000 sq ft", price: 425, Icon: HomeIcon },
   { id: "custom", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null, Icon: Sparkles },
 ];
 
@@ -119,8 +118,8 @@ const FAQ_ITEMS = [
   {cat:"Our Services",q:"Can I add extras to my basic clean?",a:"Absolutely. You can add extras when booking or by contacting us. Common add-ons include fridge, oven, and microwave cleaning, window cleaning, blind cleaning, balcony cleaning, professional carpet cleaning, and more."},
   {cat:"Our Services",q:"Do you clean finished basements?",a:"Yes. Finished basements can be added to any package. Just check the box on the booking form or mention it when you contact us."},
   {cat:"Our Services",q:"Do you offer a satisfaction guarantee?",a:"Yes. If you are not happy with any part of your clean, contact us within 24 hours and we will make it right at no extra charge."},
-  {cat:"Pricing",q:"How is pricing structured?",a:"Basic cleaning starts at $200 for condos and goes up to $450 for extra-large homes. Deep cleaning starts at $300 for condos and goes up to $550 for extra-large homes. Move-in and move-out cleans start at $300 for condos and go up to $650 for extra-large homes. Organization is quoted individually after your request, starting at $35/hour."},
-  {cat:"Pricing",q:"Is there a new client discount?",a:"Yes! New clients receive 20% off their first basic cleaning. It is applied automatically when you book and shown in your booking summary before you confirm."},
+  {cat:"Pricing",q:"How is pricing structured?",a:"Basic cleaning starts at $175 for condos (up to 1,000 sq ft) and goes up to $425 for extra-large homes (2,500–3,000 sq ft). Deep cleaning starts at $255 for condos and goes up to $575 for extra-large homes. Move-in and move-out cleans start at $275 for condos and go up to $675 for extra-large homes. Homes over 3,000 sq ft are custom quoted. Organization is quoted individually after your request, starting at $35/hour."},
+  {cat:"Pricing",q:"Is there a Christmas special?",a:"Yes! Deep cleaning is 20% off for December bookings — our Christmas Special runs until December 31, 2026. December Deep prices: Condo / Apartment (up to 1,000 sq ft) $204, Small Home (1,000–1,500 sq ft) $260, Family Home (1,500–2,000 sq ft) $300, Large Home (2,000–2,500 sq ft) $380, Extra Large Home (2,500–3,000 sq ft) $460. The discount is applied to your quote and invoice for December bookings; the booking form shows regular prices. Normal prices return in January."},
   {cat:"Pricing",q:"Are there discounts for recurring bookings?",a:"Yes. Weekly clients save 15%, bi-weekly clients save 10%, and monthly clients save 5% on every clean."},
   {cat:"Pricing",q:"Do you charge extra for homes with pets?",a:"We do not charge a mandatory pet fee, but heavy pet hair or dander may require extra time. Please mention any pets in your booking notes."},
   {cat:"Pricing",q:"Is there a fee for parking?",a:"If paid parking is required at your property, please arrange a spot for our team or let us know in your booking notes so we can plan accordingly."},
@@ -276,11 +275,10 @@ function isReturningCustomer(bookings, email, phone) {
     (b) => (b.email || "").toLowerCase() === e || (p && normalizePhone(b.phone) === p)
   );
 }
-function priceFor(tier, newClient) {
-  if (!tier || tier.price == null) return { base: null, discount: 0, final: null };
+function priceFor(tier) {
+  if (!tier || tier.price == null) return { base: null, final: null };
   const base = tier.price;
-  const discount = newClient ? Math.round(base * NEW_CLIENT_DISCOUNT) : 0;
-  return { base, discount, final: base - discount };
+  return { base, final: base };
 }
 function hoursUntil(dateStr, timeStr) {
   const t = parseTimeToMinutes(timeStr);
@@ -568,11 +566,11 @@ function Footer({ navigate }) {
 }
 
 /* ============================== SHARED BITS ============================== */
-function NewClientBanner({ compact }) {
+function ChristmasSpecialBanner({ compact }) {
   return (
     <div style={{ background: C.blush, border: `1.5px solid ${C.blushDeep}`, borderRadius: 14, padding: compact ? "10px 16px" : "14px 20px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-      <span style={{ fontWeight: 600, color: C.coral, fontSize: compact ? 13.5 : 15 }}>🎉 New Client Special – 20% Off Your First Cleaning</span>
-      {!compact && <span style={{ fontSize: 13, color: C.charcoalSoft }}>Applies to first cleaning only · can't combine with other offers</span>}
+      <span style={{ fontWeight: 600, color: C.coral, fontSize: compact ? 13.5 : 15 }}>🎄 Christmas Special – 20% Off Deep Cleaning in December</span>
+      {!compact && <span style={{ fontSize: 13, color: C.charcoalSoft }}>December bookings only · ends Dec 31, 2026 · applied to your quote &amp; invoice</span>}
     </div>
   );
 }
@@ -606,7 +604,7 @@ function HomePage({ navigate }) {
               <button onClick={() => navigate("services")} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.85)", fontFamily: "Jost", fontSize: 13.5, textDecoration: "underline", padding: 0 }}>See Pricing</button>
             </div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 9, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 999, padding: "8px 16px", fontSize: 13.5 }}>
-              <Sparkles size={15} className="gc-sparkle" /> New clients get 20% off their first cleaning
+              <Sparkles size={15} className="gc-sparkle" /> 🎄 Christmas Special: 20% off Deep Cleaning in December
             </div>
           </div>
         </div>
@@ -782,7 +780,6 @@ function HomePage({ navigate }) {
 
 /* ============================== SERVICES & PRICING PAGE ============================== */
 function ServicesPage({ navigate, initialTab }) {
-  const [previewDiscount, setPreviewDiscount] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab || "basic");
   return (
     <div className="gc-fade-in gc-container" style={{ padding: "48px 22px 80px" }}>
@@ -793,7 +790,7 @@ function ServicesPage({ navigate, initialTab }) {
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-        <NewClientBanner />
+        <ChristmasSpecialBanner />
       </div>
 
       {/* Service category tabs */}
@@ -806,15 +803,6 @@ function ServicesPage({ navigate, initialTab }) {
             </button>
           );
         })}
-      </div>
-
-      {/* New client discount toggle */}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginBottom: 28 }}>
-        <span style={{ fontSize: 13, color: C.charcoalSoft }}>Preview new-client pricing</span>
-        <button onClick={() => setPreviewDiscount(!previewDiscount)} style={{ width: 44, height: 24, borderRadius: 999, background: previewDiscount ? C.taupe : C.line, position: "relative", border: "none", cursor: "pointer", transition: "background 0.2s" }}>
-          <span style={{ position: "absolute", top: 2, left: previewDiscount ? 22 : 2, width: 20, height: 20, borderRadius: "50%", background: C.white, transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }} />
-        </button>
-        <span style={{ fontSize: 13, fontWeight: 500, color: previewDiscount ? C.taupeDark : C.charcoalSoft }}>{previewDiscount ? "Showing 20% off" : "Regular prices"}</span>
       </div>
 
       {/* HOME CONCIERGE */}
@@ -898,7 +886,7 @@ function ServicesPage({ navigate, initialTab }) {
           </div>
           <div className="gc-grid-3" style={{ marginBottom: 28 }}>
             {SIZE_TIERS.map((tier) => {
-              const p = priceFor(tier, previewDiscount);
+              const p = priceFor(tier);
               return (
                 <div key={tier.id} className="gc-card" style={{ padding: 22 }}>
                   <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{tier.label}</div>
@@ -908,9 +896,7 @@ function ServicesPage({ navigate, initialTab }) {
                   ) : (
                     <div>
                       <div style={{ fontSize: 10.5, color: C.charcoalSoft, textTransform: "uppercase", letterSpacing: "0.06em" }}>Starting at</div>
-                      {p.discount > 0 && <div style={{ fontSize: 13, textDecoration: "line-through", color: C.charcoalSoft }}>{money(p.base)}</div>}
                       <div className="gc-serif" style={{ fontSize: 26, fontWeight: 600 }}>{money(p.final)}</div>
-                      {p.discount > 0 && <div style={{ fontSize: 11.5, color: C.coral, fontWeight: 600 }}>Save {money(p.discount)}!</div>}
                     </div>
                   )}
                   <button onClick={() => navigate("book", "basic")} className="gc-btn gc-btn-outline gc-btn-sm gc-btn-block" style={{ marginTop: 14 }}>Book This</button>
@@ -937,20 +923,31 @@ function ServicesPage({ navigate, initialTab }) {
           </div>
           <div className="gc-grid-3" style={{ marginBottom: 16 }}>
             {[
-              {id:"condo-d",label:"Condo / Apartment",sub:"Up to 1,000 sq ft",price:300},
-              {id:"small-d",label:"Small Home",sub:"1,000–1,500 sq ft",price:350},
-              {id:"family-d",label:"Family Home",sub:"1,500–2,000 sq ft",price:400},
-              {id:"large-d",label:"Large Home",sub:"2,000–2,500 sq ft",price:450},
-              {id:"xl-d",label:"Extra Large Home",sub:"2,500–3,000 sq ft",price:550},
+              {id:"condo-d",label:"Condo / Apartment",sub:"Up to 1,000 sq ft",price:255},
+              {id:"small-d",label:"Small Home",sub:"1,000–1,500 sq ft",price:325},
+              {id:"family-d",label:"Family Home",sub:"1,500–2,000 sq ft",price:375},
+              {id:"large-d",label:"Large Home",sub:"2,000–2,500 sq ft",price:475},
+              {id:"xl-d",label:"Extra Large Home",sub:"2,500–3,000 sq ft",price:575},
               {id:"custom-d",label:"Larger Home",sub:"3,000+ sq ft",price:null},
             ].map((t) => (
               <div key={t.id} className="gc-card" style={{ padding: 22 }}>
                 <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{t.label}</div>
                 <div style={{ fontSize: 12.5, color: C.charcoalSoft, marginBottom: 14 }}>{t.sub}</div>
-                {t.price ? <div className="gc-serif" style={{ fontSize: 26, fontWeight: 600 }}>{money(t.price)}</div> : <div className="gc-serif" style={{ fontSize: 22, color: C.taupeDark }}>Custom quote</div>}
+                {t.price ? <><div style={{ fontSize: 10.5, color: C.charcoalSoft, textTransform: "uppercase", letterSpacing: "0.06em" }}>Starting at</div><div className="gc-serif" style={{ fontSize: 26, fontWeight: 600 }}>{money(t.price)}</div></> : <div className="gc-serif" style={{ fontSize: 22, color: C.taupeDark }}>Custom quote</div>}
                 <button onClick={() => navigate("book", "deep")} className="gc-btn gc-btn-outline gc-btn-sm gc-btn-block" style={{ marginTop: 14 }}>Book This</button>
               </div>
             ))}
+          </div>
+          <div style={{ borderRadius: 14, background: C.blush, border: `1.5px solid ${C.blushDeep}`, padding: "18px 20px", marginBottom: 16 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: C.coral, marginBottom: 8 }}>🎄 Christmas Special: 20% Off Deep Cleaning in December</div>
+            <p style={{ fontSize: 13.5, color: C.charcoalSoft, lineHeight: 1.65, margin: "0 0 10px" }}>Book a deep clean in December and save 20% — our Christmas Special ends December 31, 2026, and normal prices return in January. The booking form shows regular prices; the 20% discount is applied to your quote and invoice for December bookings.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 18px", fontSize: 13.5, color: C.charcoal }}>
+              <div><strong>Condo / Apartment</strong> — Up to 1,000 sq ft — <strong>$204</strong></div>
+              <div><strong>Small Home</strong> — 1,000–1,500 sq ft — <strong>$260</strong></div>
+              <div><strong>Family Home</strong> — 1,500–2,000 sq ft — <strong>$300</strong></div>
+              <div><strong>Large Home</strong> — 2,000–2,500 sq ft — <strong>$380</strong></div>
+              <div><strong>Extra Large Home</strong> — 2,500–3,000 sq ft — <strong>$460</strong></div>
+            </div>
           </div>
         </div>
       )}
@@ -972,11 +969,11 @@ function ServicesPage({ navigate, initialTab }) {
           </div>
           <div className="gc-grid-3" style={{ marginBottom: 16 }}>
             {[
-              {id:"condo-m",label:"Condo / Apartment",sub:"Up to 1,000 sq ft",price:300},
-              {id:"small-m",label:"Small Home",sub:"1,000–1,500 sq ft",price:400},
-              {id:"family-m",label:"Family Home",sub:"1,500–2,000 sq ft",price:450},
-              {id:"large-m",label:"Large Home",sub:"2,000–2,500 sq ft",price:550},
-              {id:"xl-m",label:"Extra Large Home",sub:"2,500–3,000 sq ft",price:650},
+              {id:"condo-m",label:"Condo / Apartment",sub:"Up to 1,000 sq ft",price:275},
+              {id:"small-m",label:"Small Home",sub:"1,000–1,500 sq ft",price:375},
+              {id:"family-m",label:"Family Home",sub:"1,500–2,000 sq ft",price:475},
+              {id:"large-m",label:"Large Home",sub:"2,000–2,500 sq ft",price:575},
+              {id:"xl-m",label:"Extra Large Home",sub:"2,500–3,000 sq ft",price:675},
               {id:"custom-m",label:"Larger Home",sub:"3,000+ sq ft",price:null},
             ].map((t) => (
               <div key={t.id} className="gc-card" style={{ padding: 22 }}>
@@ -1000,19 +997,19 @@ function ServicesPage({ navigate, initialTab }) {
 /* ============================== BOOK PAGE ============================== */
 
 const DEEP_TIERS = [
-  { id: "condo-deep", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 300 },
-  { id: "small-deep", label: "Small Home", sub: "1,000–1,500 sq ft", price: 350 },
-  { id: "family-deep", label: "Family Home", sub: "1,500–2,000 sq ft", price: 400 },
-  { id: "large-deep", label: "Large Home", sub: "2,000–2,500 sq ft", price: 450 },
-  { id: "xl-deep", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 550 },
+  { id: "condo-deep", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 255 },
+  { id: "small-deep", label: "Small Home", sub: "1,000–1,500 sq ft", price: 325 },
+  { id: "family-deep", label: "Family Home", sub: "1,500–2,000 sq ft", price: 375 },
+  { id: "large-deep", label: "Large Home", sub: "2,000–2,500 sq ft", price: 475 },
+  { id: "xl-deep", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 575 },
   { id: "custom-deep", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null },
 ];
 const MOVEINOUT_TIERS = [
-  { id: "condo-mio", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 300 },
-  { id: "small-mio", label: "Small Home", sub: "1,000–1,500 sq ft", price: 400 },
-  { id: "family-mio", label: "Family Home", sub: "1,500–2,000 sq ft", price: 450 },
-  { id: "large-mio", label: "Large Home", sub: "2,000–2,500 sq ft", price: 550 },
-  { id: "xl-mio", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 650 },
+  { id: "condo-mio", label: "Condo / Apartment", sub: "Up to 1,000 sq ft", price: 275 },
+  { id: "small-mio", label: "Small Home", sub: "1,000–1,500 sq ft", price: 375 },
+  { id: "family-mio", label: "Family Home", sub: "1,500–2,000 sq ft", price: 475 },
+  { id: "large-mio", label: "Large Home", sub: "2,000–2,500 sq ft", price: 575 },
+  { id: "xl-mio", label: "Extra Large Home", sub: "2,500–3,000 sq ft", price: 675 },
   { id: "custom-mio", label: "Larger Home", sub: "3,000+ sq ft — custom quote", price: null },
 ];
 const CLEANING_ADDONS = [
@@ -1089,17 +1086,15 @@ function calcDeposit(category, price) {
   if (price != null) return Math.round(price * 0.5);
   return 100;
 }
-function calcPriceBreakdown(category, tierId, recurringId, newClient) {
+function calcPriceBreakdown(category, tierId, recurringId) {
   let base = null;
   if (category === "basic") { const t = SIZE_TIERS.find(t => t.id === tierId); if (t) base = t.price; }
   else if (category === "deep") { const t = DEEP_TIERS.find(t => t.id === tierId); if (t) base = t.price; }
   else if (category === "moveinout") { const t = MOVEINOUT_TIERS.find(t => t.id === tierId); if (t) base = t.price; }
-  if (base == null) return { base: null, newClientDiscount: 0, recurringDiscount: 0, final: null };
-  const newClientDiscount = (newClient && category === "basic") ? Math.round(base * NEW_CLIENT_DISCOUNT) : 0;
-  const afterNew = base - newClientDiscount;
+  if (base == null) return { base: null, recurringDiscount: 0, final: null };
   const rec = RECURRING_OPTIONS.find(r => r.id === recurringId);
-  const recurringDiscount = rec ? Math.round(afterNew * rec.discount) : 0;
-  return { base, newClientDiscount, recurringDiscount, final: afterNew - recurringDiscount };
+  const recurringDiscount = rec ? Math.round(base * rec.discount) : 0;
+  return { base, recurringDiscount, final: base - recurringDiscount };
 }
 
 function BookPage({ bookings, addBooking, navigate, initialCategory }) {
@@ -1125,7 +1120,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
   const toggleConcierge = (id) => setForm(f => ({ ...f, conciergeServices: f.conciergeServices.includes(id) ? f.conciergeServices.filter(s => s !== id) : [...f.conciergeServices, id] }));
   const newClient = useMemo(() => !isReturningCustomer(bookings, form.email, form.phone), [bookings, form.email, form.phone]);
   const activeTierId = form.serviceCategory === "basic" ? form.basicTierId : form.serviceCategory === "deep" ? form.deepTierId : form.serviceCategory === "moveinout" ? form.moveinoutTierId : null;
-  const priceCalc = useMemo(() => calcPriceBreakdown(form.serviceCategory, activeTierId, form.recurring, newClient), [form.serviceCategory, activeTierId, form.recurring, newClient]);
+  const priceCalc = useMemo(() => calcPriceBreakdown(form.serviceCategory, activeTierId, form.recurring), [form.serviceCategory, activeTierId, form.recurring]);
   const deposit = calcDeposit(form.serviceCategory, priceCalc.final);
   const serviceLabel = useMemo(() => {
     if (form.serviceCategory === "concierge") return "Household Assistant Inquiry";
@@ -1170,7 +1165,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
       serviceCategory: form.serviceCategory, serviceLabel,
       sizeTierId: activeTierId,
       basePrice: priceCalc.base,
-      discount: (priceCalc.newClientDiscount || 0) + (priceCalc.recurringDiscount || 0),
+      discount: priceCalc.recurringDiscount || 0,
       finalPrice: priceCalc.final,
       depositAmount: deposit,
       isNewCustomer: newClient, recurring: form.recurring,
@@ -1285,7 +1280,7 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
       {step === 3 && (
         <div className="gc-card" style={{ padding: 24 }}>
           <h2 className="gc-serif" style={{ fontSize: 19, marginBottom: 16 }}>What service do you need?</h2>
-          {newClient && <div style={{ marginBottom: 16 }}><NewClientBanner compact /></div>}
+          <div style={{ marginBottom: 16 }}><ChristmasSpecialBanner compact /></div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
             {[["concierge","🛎️","Household Assistant"],["basic","🏠","Basic Cleaning"],["deep","✨","Deep Cleaning"],["moveinout","🚚","Move-In / Move-Out"]].map(([id,icon,label]) => (
               <button key={id} onClick={() => set("serviceCategory", id)} style={{ padding: 14, borderRadius: 12, border: `1.5px solid ${form.serviceCategory === id ? C.taupe : C.line}`, background: form.serviceCategory === id ? C.creamDeep : C.white, fontFamily: "Jost", fontSize: 14, fontWeight: 600, cursor: "pointer", color: form.serviceCategory === id ? C.taupeDark : C.charcoal, textAlign: "center" }}>
@@ -1296,11 +1291,10 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
 
           {form.serviceCategory === "basic" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {SIZE_TIERS.map(t => { const p = priceFor(t, newClient); return (
+              {SIZE_TIERS.map(t => { const p = priceFor(t); return (
                 <button key={t.id} onClick={() => set("basicTierId", t.id)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${form.basicTierId === t.id ? C.taupe : C.line}`, background: form.basicTierId === t.id ? C.creamDeep : C.white, cursor: "pointer", textAlign: "left", width: "100%", fontFamily: "Jost" }}>
                   <div><div style={{ fontWeight: 500, fontSize: 14 }}>{t.label}</div><div style={{ fontSize: 12, color: C.charcoalSoft }}>{t.sub}</div></div>
                   <div style={{ textAlign: "right" }}>
-                    {p.discount > 0 && <div style={{ fontSize: 11, textDecoration: "line-through", color: C.charcoalSoft }}>{money(p.base)}</div>}
                     <div style={{ fontWeight: 600, color: C.taupeDark }}>{t.price ? money(p.final) : "Custom"}</div>
                   </div>
                 </button>
@@ -1451,7 +1445,6 @@ function BookPage({ bookings, addBooking, navigate, initialCategory }) {
             <Row label="Price" value="Complimentary consultation — no charge" highlight />
           ) : priceCalc.final != null ? (
             <>
-              {priceCalc.newClientDiscount > 0 && <Row label="New client discount (20%)" value={`−${money(priceCalc.newClientDiscount)}`} />}
               {priceCalc.recurringDiscount > 0 && <Row label="Recurring discount" value={`−${money(priceCalc.recurringDiscount)}`} />}
               <Row label="Estimated total" value={money(priceCalc.final)} highlight />
               <Row label="Deposit to secure booking" value={money(deposit)} highlight />
